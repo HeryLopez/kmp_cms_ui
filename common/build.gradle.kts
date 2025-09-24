@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.serialization)
     alias(libs.plugins.androidLint)
+    `maven-publish`
 }
 
 kotlin {
@@ -76,6 +77,14 @@ kotlin {
                 implementation(libs.androidx.foundation.desktop)
                 implementation(libs.androidx.ui.util.desktop)
             }
+        }
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("commonMpp") {
+            from(components["kotlin"])
         }
     }
 }
