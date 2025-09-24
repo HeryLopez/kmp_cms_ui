@@ -34,5 +34,7 @@ fun Color.toHex(): String {
     val r = (red * 255).toInt()
     val g = (green * 255).toInt()
     val b = (blue * 255).toInt()
-    return String.format("#%02X%02X%02X", r, g, b)
+    //return String.format("#%02X%02X%02X", r, g, b)
+    return "#${r.toString(16).padStart(2, '0').uppercase()}${g.toString(16).padStart(2, '0').uppercase()}${b.toString(16).padStart(2, '0').uppercase()}"
+
 }
