@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini
+package com.example.common
 
 import io.ktor.client.HttpClient
 

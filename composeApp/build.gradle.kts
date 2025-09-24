@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         jvmMain.dependencies {
+            implementation(project(":common"))
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.ktor.client.cio)
@@ -81,6 +82,9 @@ android {
 }
 
 dependencies {
+
+    implementation(project(":common"))
+
     debugImplementation(compose.uiTooling)
 }
 

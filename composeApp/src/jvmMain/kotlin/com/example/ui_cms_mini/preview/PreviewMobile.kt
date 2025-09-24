@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.ui_cms_mini.RenderScreen
+import com.example.common.RenderScreen
 import com.example.ui_cms_mini.listComponents.ListViewModel
 
 @Composable

@@ -48,18 +48,20 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.example.ui_cms_mini.listComponents.ListViewModel
 import com.example.ui_cms_mini.listComponents.generateRandomText
-import com.example.ui_cms_mini.model.ComponentItem
-import com.example.ui_cms_mini.model.toHex
-import com.example.ui_cms_mini.preview.PreviewMobile
-import com.example.ui_cms_mini.repository.ComponentRepository
+import com.example.common.model.ComponentItem
+
+
 import kotlinx.coroutines.launch
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import kotlin.random.Random
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.LocalDensity
+import com.example.common.model.toHex
+import com.example.common.repository.ComponentRepository
 import com.example.ui_cms_mini.thumbnails.RandomTextThumbnail
-import com.example.ui_cms_mini.utils.ComponentJsonMapper
+import com.example.common.utils.ComponentJsonMapper
+import com.example.ui_cms_mini.preview.PreviewMobile
 import kotlinx.coroutines.Dispatchers
 
 fun main() = application {

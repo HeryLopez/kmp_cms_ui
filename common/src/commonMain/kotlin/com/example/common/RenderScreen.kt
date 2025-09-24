@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini
+package com.example.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,8 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.ui_cms_mini.model.ComponentItem
-import com.example.ui_cms_mini.utils.ComponentJsonMapper
+import com.example.common.model.ComponentItem
+import com.example.common.utils.ComponentJsonMapper
 
 @Composable
 fun RenderScreen(jsonList: List<String>) {
@@ -29,7 +29,7 @@ fun RenderScreen(jsonList: List<String>) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(2f)
         ) {
             items(items) { item ->
                 Box(
@@ -50,7 +50,7 @@ fun RenderScreen(jsonList: List<String>) {
             }
         }
 
-        if (getPlatform().name == "desktop") {
+        if (platform() == "desktop") {
             HorizontalDivider()
             Column(
                 modifier = Modifier

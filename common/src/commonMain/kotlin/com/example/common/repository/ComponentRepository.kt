@@ -1,7 +1,8 @@
-package com.example.ui_cms_mini.repository
+package com.example.common.repository
 
-import com.example.ui_cms_mini.httpClient
-import com.example.ui_cms_mini.model.ComponentItem
+
+import com.example.common.httpClient
+import com.example.common.model.ComponentItem
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

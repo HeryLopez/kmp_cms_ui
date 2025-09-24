@@ -1,6 +1,6 @@
 package com.example.ui_cms_mini.listComponents
 
-import com.example.ui_cms_mini.model.ComponentItem
+import com.example.common.model.ComponentItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.encodeToString

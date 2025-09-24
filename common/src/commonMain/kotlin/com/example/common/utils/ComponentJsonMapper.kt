@@ -1,7 +1,8 @@
-package com.example.ui_cms_mini.utils
+package com.example.common.utils
 
 
-import com.example.ui_cms_mini.model.ComponentItem
+
+import com.example.common.model.ComponentItem
 import kotlinx.serialization.json.Json
 
 

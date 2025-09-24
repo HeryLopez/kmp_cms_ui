@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini.model
+package com.example.common.model
 
 import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.Serializable
