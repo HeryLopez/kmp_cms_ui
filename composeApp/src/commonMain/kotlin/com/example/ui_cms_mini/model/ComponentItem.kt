@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ComponentItem(
+    val id: Int,
     val text: String,
     val color: String,
     val type: String
@@ -15,6 +16,7 @@ data class ComponentItem(
 
     fun toMap(): Map<String, String> {
         return mapOf(
+            "id" to id.toString(),
             "type" to type,
             "text" to text,
             "color" to color

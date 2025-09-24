@@ -24,21 +24,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-
 import androidx.compose.runtime.rememberCoroutineScope
-
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draganddrop.DragAndDropTransferData
-
 import androidx.compose.ui.graphics.Color
-
 import androidx.compose.ui.unit.dp
-import com.example.ui_cms_mini.model.ComponentItem
-import com.example.ui_cms_mini.model.toHex
-import com.example.ui_cms_mini.repository.ComponentRepository
-import kotlinx.coroutines.launch
-
-import kotlin.random.Random
 
 
 fun generateRandomText(): String {
@@ -57,45 +46,15 @@ fun generateRandomText(): String {
 @Composable
 fun ItemListScreen(viewModel: ListViewModel) {
     val items by viewModel.items.collectAsState()
-    val scope = rememberCoroutineScope()
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-
-            Button(onClick = {
-                val text = generateRandomText()
-                val color = Color(
-                    red = Random.nextFloat(),
-                    green = Random.nextFloat(),
-                    blue = Random.nextFloat()
-                )
-                val item = ComponentItem(text, color.toHex(), "component_item")
-                viewModel.addItem(item)
-                scope.launch {
-                    val repo = ComponentRepository("http://localhost:9090")
-                    repo.save(item)
-                }
-
-            }) {
-                Text("Add randon text component")
-            }
-
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(items) { item ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(item.colorColor)
-                        .padding(8.dp)
-                ) {
-                    Text(item.text, color = Color.White)
-                }
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(items) { item ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(item.colorColor)
+                    .padding(8.dp)
+            ) {
+                Text(item.text, color = Color.White)
             }
         }
     }

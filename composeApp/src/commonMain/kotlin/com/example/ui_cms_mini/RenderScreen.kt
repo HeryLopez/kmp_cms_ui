@@ -20,25 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.ui_cms_mini.model.ComponentItem
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.jsonObject
+import com.example.ui_cms_mini.utils.ComponentJsonMapper
 
 @Composable
 fun RenderScreen(jsonList: List<String>) {
     // Parseamos cada JSON de la lista a ComponentItem
-    val items: List<ComponentItem> = jsonList.mapNotNull { json ->
-        try {
-            val jsonElement = Json.parseToJsonElement(json)
-            if (jsonElement is kotlinx.serialization.json.JsonObject) {
-                val map = jsonElement.mapValues { it.value.toString().removeSurrounding("\"") }
-                mapToComponentItem(map)
-            } else null
-        } catch (e: Exception) {
-            println("Error parsing JSON: $e")
-            null
-        }
-    }
+    val items: List<ComponentItem> = ComponentJsonMapper.fromJson(jsonList)
 
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -90,15 +77,6 @@ fun RenderScreen(jsonList: List<String>) {
         }
     }
 }
-
-fun mapToComponentItem(map: Map<String, Any>): ComponentItem? {
-    if (map["type"] != "component_item") return null
-    val type = map["type"] as? String ?: return null
-    val text = map["text"] as? String ?: return null
-    val color = map["color"] as? String ?: "#FFFFFF"
-    return ComponentItem(text, color, type)
-}
-
 
 fun Color.textColorForContrast(): Color {
     // Calcula luminancia aproximada: https://stackoverflow.com/a/1855903

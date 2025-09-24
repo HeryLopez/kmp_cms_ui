@@ -14,20 +14,12 @@ import kotlinx.serialization.json.buildJsonArray
 fun main() {
     initDatabase()
 
-    val item1 = ComponentItem("🌟 Hello World!", "#6DE98C" , "component_item")
-    val item2 = ComponentItem("🚀 Keep Smiling!", "#C99DA4", "component_item")
-
-        // insertItem(Json.encodeToString(ComponentItem.serializer(), item1))
-    //insertItem(Json.encodeToString(ComponentItem.serializer(), item2))
-
-
     embeddedServer(Netty, port = 9090) {
         install(ContentNegotiation) {
             json()
         }
 
         routing {
-            // GET /items -> devuelve todos los items
             get("/jsonlist") {
                 val itemsJson: List<String> = fetchAllItems()
                 call.respond(buildJsonArray {
@@ -35,9 +27,8 @@ fun main() {
                 })
             }
 
-            // POST /items -> agrega un JSON
             post("/jsonlist") {
-                val json = call.receive<String>()   // recibimos JSON crudo
+                val json = call.receive<String>()
                 insertItem(json)
                 call.respondText("Item added successfully")
             }
