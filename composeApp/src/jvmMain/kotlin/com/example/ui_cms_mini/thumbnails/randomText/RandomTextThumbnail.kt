@@ -36,7 +36,6 @@ fun RandomTextThumbnail() {
                 .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🔹 Título
             Text(
                 "Random Text",
                 style = MaterialTheme.typography.labelMedium,

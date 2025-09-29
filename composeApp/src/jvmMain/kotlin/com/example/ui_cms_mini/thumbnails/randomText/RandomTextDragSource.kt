@@ -26,7 +26,6 @@ fun RandomTextDragSource() {
     val componentType = "component_item"
     val density = LocalDensity.current
 
-    // Convert 120.dp to pixels for the drag scene
     val sizeDp = 120.dp
     val widthPx = with(density) { sizeDp.toPx() }.toInt()
     val heightPx = widthPx // square
@@ -47,13 +46,6 @@ fun RandomTextDragSource() {
     // Render the scene to a ComposeImageBitmap
     val dragImage = remember { scene.render().toComposeImageBitmap() }
 
-
-    val img = scene.render()
-    // Convertir a BufferedImage compatible con AWT
-    val bufferedI2mage = img.toComposeImageBitmap()
-
-
-    // 🔴 Drag source
     Box(
         modifier = Modifier
             .size(sizeDp) // UI size

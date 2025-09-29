@@ -13,10 +13,8 @@ import kotlinx.serialization.json.jsonArray
 
 class ComponentRepository(private val baseUrl: String = "http://10.0.2.2:9090") {
 
-    // Usa la función multiplataforma
     private val client = httpClient()
 
-    // Obtener todos los items
     suspend fun getAll(): List<String> {
         val response: String = client.get("$baseUrl/jsonlist").body()
         // parsea el JSON array recibido a lista de strings (cada elemento es un JSON)
@@ -24,7 +22,6 @@ class ComponentRepository(private val baseUrl: String = "http://10.0.2.2:9090") 
         return jsonArray.map { it.toString() }
     }
 
-    // Guardar un item
     suspend fun save(item: ComponentItem): Boolean {
         val response: HttpResponse = client.post("$baseUrl/jsonlist") {
             contentType(ContentType.Application.Json)

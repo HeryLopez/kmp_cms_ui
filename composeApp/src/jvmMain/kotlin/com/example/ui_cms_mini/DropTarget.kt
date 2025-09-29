@@ -4,10 +4,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,7 +35,10 @@ import com.example.common.model.ComponentItem
 import com.example.common.model.toHex
 import com.example.common.repository.ComponentRepository
 import com.example.ui_cms_mini.builder.BuilderUtils
+import com.example.ui_cms_mini.common.composables.IconButtonDesktop
 import kotlinx.coroutines.launch
+import ui_cms_mini.composeapp.generated.resources.Res
+import ui_cms_mini.composeapp.generated.resources.delete_icon
 import java.awt.datatransfer.DataFlavor
 import kotlin.random.Random
 
@@ -149,20 +156,42 @@ fun DropTarget(id: Int, viewModel: ListViewModel) {
                 ),
             contentAlignment = Alignment.Center
         ) {
-
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
-                    .background(addedItem!!.colorColor)
-                    .padding(8.dp),
-                contentAlignment = Alignment.Center
-
+                    //height(100.dp)
+                    //.background(addedItem!!.colorColor)
+                    .padding(8.dp)
             ) {
-                Text(addedItem!!.text, color = Color.White)
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "Text: ${addedItem!!.text}")
+                    Row (
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(text = "Color: ${addedItem!!.color}")
+                        Box(
+                            modifier = Modifier.height(16.dp).width(16.dp).background(addedItem!!.colorColor)
+                        )
+                    }
+
+                }
+                Column(
+                    modifier = Modifier
+                ) {
+                    IconButtonDesktop(
+                        resource = Res.drawable.delete_icon,
+                        onClick = {
+                            viewModel.removeItem(addedItem!!)
+                        }
+                    )
+                }
+
             }
         }
-
 
     } else {
         // Drag source
@@ -208,3 +237,4 @@ fun DropTarget(id: Int, viewModel: ListViewModel) {
         }
     }
 }
+

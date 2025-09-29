@@ -106,6 +106,7 @@ fun MainContent(viewModel: ListViewModel) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            // Components panel
             Box(
                 modifier = Modifier
                     .width(leftPanelWidth)
@@ -124,7 +125,8 @@ fun MainContent(viewModel: ListViewModel) {
                     }
                 }
             }
-            
+
+            // Separator
             VerticalResizeHandle(
                 color = leftColor,
                 onDrag = { delta ->
@@ -133,20 +135,23 @@ fun MainContent(viewModel: ListViewModel) {
                 }
             )
 
+            // Builder grid panel
             Box(
                 modifier = Modifier
-
                     .weight(1f)
                     .fillMaxHeight()
+                    .background(Color.White)
                     .verticalScroll(rememberScrollState())
-                    .background(Color.White).horizontalScroll(rememberScrollState())
+                    .horizontalScroll(rememberScrollState())
+                    .padding(6.dp)
             ) {
                 BuilderList(
                     viewModel = viewModel,
-                    modifier = Modifier.widthIn(min = centerMin, max = centerMax) // fillMaxWidth para ocupar todo el ancho del panel
+                    modifier = Modifier.widthIn(min = centerMin, max = centerMax)
                 )
             }
 
+            // Separator
             VerticalResizeHandle(
                 color = rightColor,
                 onDrag = { delta ->
@@ -155,6 +160,7 @@ fun MainContent(viewModel: ListViewModel) {
                 }
             )
 
+            // Preview panel
             Box(
                 modifier = Modifier
                     .width(rightPanelWidth)
