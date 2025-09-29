@@ -19,7 +19,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -33,10 +32,8 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
 import com.example.common.model.ComponentItem
 import com.example.common.model.toHex
-import com.example.common.repository.ComponentRepository
 import com.example.ui_cms_mini.builder.BuilderUtils
 import com.example.ui_cms_mini.common.composables.IconButtonDesktop
-import kotlinx.coroutines.launch
 import ui_cms_mini.composeapp.generated.resources.Res
 import ui_cms_mini.composeapp.generated.resources.delete_icon
 import java.awt.datatransfer.DataFlavor
@@ -47,7 +44,6 @@ import kotlin.random.Random
 @Composable
 fun DropTarget(id: Int, viewModel: ListViewModel) {
 
-    val scope = rememberCoroutineScope()
     val addedItem by viewModel.items.collectAsState().let { state ->
         derivedStateOf { state.value.firstOrNull { it.id == id } }
     }
@@ -103,10 +99,7 @@ fun DropTarget(id: Int, viewModel: ListViewModel) {
                 val item = ComponentItem(id, text, color.toHex(), "component_item")
                 //  addedItem = item
                 viewModel.addItem(item)
-                scope.launch {
-                    val repo = ComponentRepository("http://localhost:9090")
-                    repo.save(item)
-                }
+
 
 
                 // Reverts the text of the drop target to the initial
