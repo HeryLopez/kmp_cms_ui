@@ -85,6 +85,9 @@ publishing {
     publications {
         create<MavenPublication>("commonMpp") {
             from(components["kotlin"])
+       //     groupId = "com.example"
+       //     artifactId = "kmp_cms_ui"
+        //    version = "1.1.3" // Cambia a la versión que quieras probar
         }
     }
 }
