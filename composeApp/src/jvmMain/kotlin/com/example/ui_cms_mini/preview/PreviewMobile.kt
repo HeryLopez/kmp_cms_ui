@@ -15,7 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.common.RenderScreen
-import com.example.ui_cms_mini.listComponents.ListViewModel
+import com.example.ui_cms_mini.ListViewModel
 
 @Composable
 fun PreviewMobile(viewModel: ListViewModel) {
@@ -23,16 +23,16 @@ fun PreviewMobile(viewModel: ListViewModel) {
 
     Box(
         modifier = Modifier
-            .width(400.dp)   // ancho aproximado de un móvil
-            .height(800.dp)  // alto aproximado de un móvil
-            .background(Color.Black, RoundedCornerShape(40.dp)) // borde exterior tipo móvil
-            .padding(16.dp)  // margen interior para simular el bezel
+            .width(400.dp)
+            .height(800.dp)
+            .background(Color.Black, RoundedCornerShape(40.dp))
+            .padding(16.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(32.dp))
-                .background(Color.White, RoundedCornerShape(20.dp)) // pantalla del móvil
+                .background(Color.White, RoundedCornerShape(20.dp))
         ) {
             RenderScreen(jsonExport)
         }

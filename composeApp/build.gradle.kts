@@ -50,6 +50,7 @@ kotlin {
             implementation(libs.ktor.client.cio)
             implementation(libs.androidx.foundation.desktop)
             implementation(libs.androidx.ui.util.desktop)
+            //implementation(libs.androidx.material.icons.extended.desktop)
         }
     }
 }

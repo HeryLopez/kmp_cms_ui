@@ -39,18 +39,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-//        val platformName = getPlatform().name
         setContent {
             MaterialTheme {
                 Column(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.primaryContainer)
-                        //.safeContentPadding()
-                            .systemBarsPadding()
+                        .systemBarsPadding()
                         .fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    //    RenderScreen("[{\"text\":\"\uD83C\uDF1F Hello World!\",\"color\":\"#6DE98C\"},{\"text\":\"\uD83D\uDE80 Keep Smiling!\",\"color\":\"#C99DA4\"}]")
                     ContentComposable()
                 }
             }
@@ -81,20 +78,16 @@ fun ContentComposable() {
         loadData()
     }
 
-
     val scope = rememberCoroutineScope()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Contenido principal
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Renderiza los items
             RenderScreen(jsonList)
         }
 
-        // FAB superpuesto abajo a la derecha
         FloatingActionButton(
             onClick = {
                 scope.launch {

@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 
 object ComponentItemsTable : Table("component_items") {
     val id = integer("id").autoIncrement()
-    val data = text("data")   // <-- guardamos JSON crudo
+    val data = text("data")
     override val primaryKey = PrimaryKey(id)
 }
 

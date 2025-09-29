@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini.thumbnails
+package com.example.ui_cms_mini.thumbnails.randomText
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,7 +27,7 @@ fun RandomTextThumbnail() {
             .width(140.dp)
             .height(180.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)), // fondo gris claro
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
