@@ -66,7 +66,7 @@ fun ContentComposable() {
         isLoading = true
         try {
             delay(1000)
-            jsonList = repo.getAll()
+            jsonList = repo.getJsonItems()
         } catch (e: Exception) {
             Log.e("ContentComposable", "Error fetching data", e)
         } finally {
@@ -95,7 +95,7 @@ fun ContentComposable() {
                 }
             },
             modifier = Modifier
-                .align(Alignment.BottomEnd) // posición flotante
+                .align(Alignment.BottomEnd)
                 .padding(16.dp)
         ) {
             if (isLoading) {

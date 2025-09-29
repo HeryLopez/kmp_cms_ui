@@ -17,12 +17,23 @@ fun initDatabase() {
     }
 }
 
-fun insertItem(json: String) = transaction {
-    ComponentItemsTable.insert {
-        it[data] = json
+fun saveItem(json: String) = transaction {
+    val existing = ComponentItemsTable.selectAll().firstOrNull()
+    if (existing != null) {
+        ComponentItemsTable.update({ ComponentItemsTable.id eq existing[ComponentItemsTable.id] }) {
+            it[data] = json
+        }
+    } else {
+        ComponentItemsTable.insert {
+            it[data] = json
+        }
     }
 }
 
-fun fetchAllItems(): List<String> = transaction {
-    ComponentItemsTable.selectAll().map { it[ComponentItemsTable.data] }
+fun fetchItem(): String? = transaction {
+    ComponentItemsTable
+        .selectAll()
+        .limit(1)
+        .firstOrNull()
+        ?.get(ComponentItemsTable.data)
 }

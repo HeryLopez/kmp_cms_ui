@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
 import com.example.common.model.ComponentItem
-import com.example.common.model.toHex
+import com.example.common.utils.toHex
 import com.example.ui_cms_mini.builder.BuilderUtils
 import com.example.ui_cms_mini.common.composables.IconButtonDesktop
 import ui_cms_mini.composeapp.generated.resources.Res

@@ -1,8 +1,8 @@
 package com.example.common.repository
 
-
 import com.example.common.httpClient
 import com.example.common.model.ComponentItem
+import com.example.common.utils.ComponentJsonMapper
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -15,17 +15,28 @@ class ComponentRepository(private val baseUrl: String = "http://10.0.2.2:9090") 
 
     private val client = httpClient()
 
-    suspend fun getAll(): List<String> {
-        val response: String = client.get("$baseUrl/jsonlist").body()
-        // parsea el JSON array recibido a lista de strings (cada elemento es un JSON)
-        val jsonArray = Json.parseToJsonElement(response).jsonArray
-        return jsonArray.map { it.toString() }
+    suspend fun getJsonItems(): List<String> {
+        val json: String = client.get("$baseUrl/jsonlist").body()
+        val jsonArray = Json.parseToJsonElement(json).jsonArray
+
+        val itemStrings = jsonArray.map { it.toString() }
+        return itemStrings
     }
 
-    suspend fun save(item: ComponentItem): Boolean {
+    suspend fun getAll(): List<ComponentItem> {
+        val json: String = client.get("$baseUrl/jsonlist").body()
+        val jsonArray = Json.parseToJsonElement(json).jsonArray
+
+        val itemStrings = jsonArray.map { it.toString() }
+        return ComponentJsonMapper.fromJson(itemStrings)
+    }
+
+    suspend fun saveJson(itemStrings: List<String>): Boolean {
+        val jsonArray = itemStrings.joinToString(prefix = "[", postfix = "]", separator = ",")
+
         val response: HttpResponse = client.post("$baseUrl/jsonlist") {
             contentType(ContentType.Application.Json)
-            setBody(Json.encodeToString(ComponentItem.serializer(), item))
+            setBody(jsonArray)
         }
         return response.status == HttpStatusCode.OK
     }

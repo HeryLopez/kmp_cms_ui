@@ -24,6 +24,23 @@ class ListViewModel : ViewModel() {
     private val _jsonExport = MutableStateFlow<List<String>>(emptyList())
     val jsonExport: StateFlow<List<String>> = _jsonExport
 
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
+
+    init {
+        initData()
+    }
+
+    fun initData() {
+        viewModelScope.launch {
+            _loading.value = true
+            val components = repo.getAll()
+            //delay(5000)
+            addAllItems(components)
+            _loading.value = false
+        }
+    }
+
     fun addAllItems(items: List<ComponentItem>) {
         _items.value = items.sortedBy { it.id }
         buildJson()
@@ -35,7 +52,7 @@ class ListViewModel : ViewModel() {
         buildJson()
 
         viewModelScope.launch {
-            repo.save(item)
+            repo.saveJson(_jsonExport.value)
         }
     }
 
@@ -43,6 +60,10 @@ class ListViewModel : ViewModel() {
         val updatedList = _items.value.filter { i -> i.id != addedItem.id }
         _items.value = updatedList
         buildJson()
+
+        viewModelScope.launch {
+            repo.saveJson(_jsonExport.value)
+        }
     }
 
     private fun buildJson() {

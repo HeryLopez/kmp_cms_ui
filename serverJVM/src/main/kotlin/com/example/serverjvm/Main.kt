@@ -8,8 +8,6 @@ import io.ktor.server.response.*
 import io.ktor.server.request.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.plugins.contentnegotiation.*
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonArray
 
 fun main() {
     initDatabase()
@@ -21,15 +19,13 @@ fun main() {
 
         routing {
             get("/jsonlist") {
-                val itemsJson: List<String> = fetchAllItems()
-                call.respond(buildJsonArray {
-                    itemsJson.forEach { add(Json.parseToJsonElement(it)) }
-                })
+                val json: String? = fetchItem()
+                call.respond(json ?: "[]")
             }
 
             post("/jsonlist") {
                 val json = call.receive<String>()
-                insertItem(json)
+                saveItem(json)
                 call.respondText("Item added successfully")
             }
         }

@@ -17,14 +17,14 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.common.model.ComponentItem
 import com.example.common.utils.ComponentJsonMapper
+import com.example.common.utils.textColorForContrast
 
 @Composable
 fun RenderScreen(jsonList: List<String>) {
-    // Parseamos cada JSON de la lista a ComponentItem
+
     val items: List<ComponentItem> = ComponentJsonMapper.fromJson(jsonList)
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -64,7 +64,6 @@ fun RenderScreen(jsonList: List<String>) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // TextField de solo lectura para copiar/pegar
                 TextField(
                     value = jsonList.joinToString(separator = "\n"),
                     onValueChange = {},
@@ -76,10 +75,4 @@ fun RenderScreen(jsonList: List<String>) {
             }
         }
     }
-}
-
-fun Color.textColorForContrast(): Color {
-    // Calcula luminancia aproximada: https://stackoverflow.com/a/1855903
-    val luminance = (0.299 * red + 0.587 * green + 0.114 * blue)
-    return if (luminance > 0.5) Color.Black else Color.White
 }

@@ -17,7 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,9 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import com.example.common.model.ComponentItem
-import com.example.common.repository.ComponentRepository
-import com.example.common.utils.ComponentJsonMapper
 import com.example.ui_cms_mini.builder.BuilderList
 import com.example.ui_cms_mini.common.composables.VerticalResizeHandle
 import com.example.ui_cms_mini.preview.PreviewMobile
@@ -70,25 +67,7 @@ fun MainContent(viewModel: ListViewModel) {
     val rightColor = Color.Gray.copy(alpha = 0.1f)
 
 
-    val repo = ComponentRepository("http://localhost:9090")
-    var isLoading by remember { mutableStateOf(false) }
-
-    suspend fun loadData() {
-        isLoading = true
-        try {
-            val jsonList = repo.getAll()
-            val items: List<ComponentItem> = ComponentJsonMapper.fromJson(jsonList)
-            viewModel.addAllItems(items)
-        } catch (e: Exception) {
-            // TODO Show Error
-        } finally {
-            isLoading = false
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        loadData()
-    }
+    val isLoading by viewModel.loading.collectAsState()
 
     if (isLoading) {
         Box(

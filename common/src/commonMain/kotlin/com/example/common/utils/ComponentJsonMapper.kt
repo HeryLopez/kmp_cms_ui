@@ -1,10 +1,7 @@
 package com.example.common.utils
 
-
-
 import com.example.common.model.ComponentItem
 import kotlinx.serialization.json.Json
-
 
 object ComponentJsonMapper {
     fun fromJson(jsonList: List<String>): List<ComponentItem> {
@@ -31,5 +28,4 @@ object ComponentJsonMapper {
         val color = map["color"] as? String ?: "#FFFFFF"
         return ComponentItem(id = id.toInt(), text, color, type)
     }
-
 }
