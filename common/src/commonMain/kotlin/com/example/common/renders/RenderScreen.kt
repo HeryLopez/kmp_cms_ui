@@ -1,4 +1,4 @@
-package com.example.common
+package com.example.common.renders
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,14 +17,18 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.example.common.model.ComponentItem
+import com.example.common.model.ImageComponent
+import com.example.common.model.TextComponent
+import com.example.common.platform
 import com.example.common.utils.ComponentJsonMapper
 import com.example.common.utils.textColorForContrast
 
 @Composable
 fun RenderScreen(jsonList: List<String>) {
-
     val items: List<ComponentItem> = ComponentJsonMapper.fromJson(jsonList)
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -32,24 +36,16 @@ fun RenderScreen(jsonList: List<String>) {
             modifier = Modifier.weight(2f)
         ) {
             items(items) { item ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = item.colorColor)
-                        .padding(vertical = 16.dp, horizontal = 24.dp)
-                        .align(Alignment.CenterHorizontally)
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = item.text,
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            color = item.colorColor.textColorForContrast()
-                        )
-                    )
+                when (item) {
+                    is TextComponent -> RenderTextComponent(item)
+                    is ImageComponent -> RenderImageComponent(item)
+                    // 🧩 En el futuro: simplemente agregas
+                    // is ButtonComponent -> RenderButtonComponent(item)
                 }
             }
         }
 
+        // Solo en desktop: mostrar JSON generado
         if (platform() == "desktop") {
             HorizontalDivider()
             Column(
@@ -76,3 +72,50 @@ fun RenderScreen(jsonList: List<String>) {
         }
     }
 }
+
+
+@Composable
+fun RenderTextComponent(component: TextComponent) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = component.colorColor)
+            .padding(vertical = 16.dp, horizontal = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = component.text,
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = component.colorColor.textColorForContrast()
+            )
+        )
+    }
+}
+
+@Composable
+fun RenderImageComponent(component: ImageComponent) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+    ) {
+        AsyncImage(
+            model = component.backgroundImageUrl,
+            contentDescription = component.title,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(component.titleColorColor.copy(alpha = 0.4f))
+        )
+        Text(
+            text = component.title,
+            color = component.titleColorColor,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+

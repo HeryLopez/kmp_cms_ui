@@ -32,9 +32,12 @@ kotlin {
 
     jvm()
 
+    /*
     iosX64 { binaries.framework { baseName = "commonKit" } }
     iosArm64 { binaries.framework { baseName = "commonKit" } }
     iosSimulatorArm64 { binaries.framework { baseName = "commonKit" } }
+    */
+
 
 
     // Source set declarations.
@@ -58,6 +61,8 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
+                implementation("io.coil-kt.coil3:coil-compose:3.0.0-alpha06")
+                implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha06")
             }
         }
 
@@ -76,6 +81,8 @@ kotlin {
                 implementation(libs.ktor.client.cio)
                 implementation(libs.androidx.foundation.desktop)
                 implementation(libs.androidx.ui.util.desktop)
+                implementation("io.coil-kt.coil3:coil-compose:3.0.0-alpha06")
+                implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha06")
             }
         }
     }

@@ -30,15 +30,11 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
-import com.example.common.model.ComponentItem
-import com.example.common.utils.toHex
-import com.example.ui_cms_mini.builder.BuilderUtils
-import com.example.ui_cms_mini.common.composables.IconButtonDesktop
-import ui_cms_mini.composeapp.generated.resources.Res
-import ui_cms_mini.composeapp.generated.resources.delete_icon
+import com.example.common.model.ImageComponent
+import com.example.common.model.TextComponent
+import com.example.ui_cms_mini.components.imageBlock.ImageBlockDropComponent
+import com.example.ui_cms_mini.components.randomText.TextBlockDropComponent
 import java.awt.datatransfer.DataFlavor
-import kotlin.random.Random
-
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -81,14 +77,17 @@ fun DropTarget(id: Int, viewModel: ListViewModel) {
                 val result = (targetText == "Drop here")
 
                 // Changes the text to the value dropped into the composable.
-                targetText = event.awtTransferable.let {
+                val componentType = event.awtTransferable.let {
                     if (it.isDataFlavorSupported(DataFlavor.stringFlavor))
                         it.getTransferData(DataFlavor.stringFlavor) as String
                     else
                         it.transferDataFlavors.first().humanPresentableName
                 }
 
-
+                // Update selected item
+                targetText = componentType
+                viewModel.addItem(id, componentType)
+/*
                 // Add item
                 val text = BuilderUtils.generateRandomText()
                 val color = Color(
@@ -100,8 +99,7 @@ fun DropTarget(id: Int, viewModel: ListViewModel) {
                 //  addedItem = item
                 viewModel.addItem(item)
 
-
-
+*/
                 // Reverts the text of the drop target to the initial
                 // value after 2 seconds.
                 /* coroutineScope.launch {
@@ -149,40 +147,15 @@ fun DropTarget(id: Int, viewModel: ListViewModel) {
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    //height(100.dp)
-                    //.background(addedItem!!.colorColor)
-                    .padding(8.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(text = "Text: ${addedItem!!.text}")
-                    Row (
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Text(text = "Color: ${addedItem!!.color}")
-                        Box(
-                            modifier = Modifier.height(16.dp).width(16.dp).background(addedItem!!.colorColor)
-                        )
-                    }
+            val component = addedItem!!;
+            when (component) {
+                is TextComponent -> TextBlockDropComponent(
+                    component = component,
+                    onRemoveClick = { viewModel.removeItem(component) })
 
-                }
-                Column(
-                    modifier = Modifier
-                ) {
-                    IconButtonDesktop(
-                        resource = Res.drawable.delete_icon,
-                        onClick = {
-                            viewModel.removeItem(addedItem!!)
-                        }
-                    )
-                }
-
+                is ImageComponent -> ImageBlockDropComponent(
+                    component = component,
+                    onRemoveClick = { viewModel.removeItem(component) })
             }
         }
 

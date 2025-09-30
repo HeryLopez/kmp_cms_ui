@@ -1,5 +1,6 @@
-package com.example.ui_cms_mini.thumbnails.randomText
+package com.example.ui_cms_mini.components.imageBlock
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +18,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
+import com.example.common.model.ComponentType
+import org.jetbrains.compose.resources.painterResource
+import ui_cms_mini.composeapp.generated.resources.Res
+import ui_cms_mini.composeapp.generated.resources.delete_icon
+import ui_cms_mini.composeapp.generated.resources.image_icon
 
 @Composable
-fun RandomTextThumbnail() {
+fun ImageBlockThumbnail() {
     Card(
         modifier = Modifier
             .width(140.dp)
@@ -37,13 +45,32 @@ fun RandomTextThumbnail() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "Random Text",
-                style = MaterialTheme.typography.labelMedium,
+                ComponentType.IMAGE_BLOCK.name,
+                style = MaterialTheme.typography.labelSmall,
                 color = Color.DarkGray,
                 modifier = Modifier.align(Alignment.Start)
             )
 
             Spacer(Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .background(Color.LightGray, RoundedCornerShape(8.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                // Placeholder de imagen
+                Image(
+                    painter = painterResource(Res.drawable.image_icon,),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(Color.Gray),
+                    modifier = Modifier
+                        .height(20.dp)
+                        .width(20.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+            }
 
 
             Box(

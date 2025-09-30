@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini.thumbnails.randomText
+package com.example.ui_cms_mini.components.imageBlock
 
 import androidx.compose.foundation.draganddrop.dragAndDropSource
 import androidx.compose.foundation.layout.Box
@@ -16,22 +16,20 @@ import androidx.compose.ui.draganddrop.DragAndDropTransferable
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.example.common.model.ComponentType
 import kotlinx.coroutines.Dispatchers
 import java.awt.datatransfer.StringSelection
 
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun RandomTextDragSource() {
-    val componentType = "component_item"
+fun ImageBlockDragSource() {
     val density = LocalDensity.current
 
     val sizeDp = 120.dp
     val widthPx = with(density) { sizeDp.toPx() }.toInt()
-    val heightPx = widthPx // square
+    val heightPx = widthPx
 
-
-    // Create an ImageComposeScene to generate the drag image
     val scene = remember {
         ImageComposeScene(
             width = widthPx,
@@ -39,7 +37,7 @@ fun RandomTextDragSource() {
             density = density,
             coroutineContext = Dispatchers.Unconfined
         ) {
-            RandomTextThumbnail() // Composable that renders the thumbnail
+            ImageBlockThumbnail()
         }
     }
 
@@ -60,7 +58,7 @@ fun RandomTextDragSource() {
 
                 DragAndDropTransferData(
                     transferable = DragAndDropTransferable(
-                        StringSelection(componentType)
+                        StringSelection(ComponentType.IMAGE_BLOCK.type)
                     ),
 
                     // List of actions supported by this drag source. A type of action
@@ -80,6 +78,6 @@ fun RandomTextDragSource() {
             },
         contentAlignment = Alignment.Center
     ) {
-        RandomTextThumbnail()
+        ImageBlockThumbnail()
     }
 }

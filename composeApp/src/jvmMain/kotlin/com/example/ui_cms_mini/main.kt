@@ -31,8 +31,9 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.example.ui_cms_mini.builder.BuilderList
 import com.example.ui_cms_mini.common.composables.VerticalResizeHandle
+import com.example.ui_cms_mini.components.imageBlock.ImageBlockDragSource
+import com.example.ui_cms_mini.components.randomText.TextBlockDragSource
 import com.example.ui_cms_mini.preview.PreviewMobile
-import com.example.ui_cms_mini.thumbnails.randomText.RandomTextDragSource
 
 fun main() = application {
     val viewModel = ListViewModel()
@@ -100,7 +101,10 @@ fun MainContent(viewModel: ListViewModel) {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     item {
-                        RandomTextDragSource()
+                        TextBlockDragSource()
+                    }
+                    item {
+                        ImageBlockDragSource()
                     }
                 }
             }
