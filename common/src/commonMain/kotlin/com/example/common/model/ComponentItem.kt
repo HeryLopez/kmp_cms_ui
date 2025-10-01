@@ -5,7 +5,7 @@ import com.example.common.utils.ColorUtils
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-enum class ComponentType(val type: String, name: String){
+enum class ComponentType(val type: String, val title: String){
     TEXT_BLOCK("text_component", "Text Block"),
     IMAGE_BLOCK("image_component", "Image Block")
 }
@@ -14,7 +14,7 @@ enum class ComponentType(val type: String, name: String){
 sealed interface ComponentItem {
     val id: Int
     val type: String
-    abstract fun toMap(): Map<String, String>
+    fun toMap(): Map<String, String>
 }
 
 @Serializable

@@ -15,6 +15,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlin.random.Random
@@ -34,9 +35,33 @@ class ListViewModel : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
+    // Item seleccionado
+    private val _selectedItem = MutableStateFlow<ComponentItem?>(null)
+    val selectedItem = _selectedItem.asStateFlow()
+
     init {
         initData()
     }
+
+    fun selectItem(item: ComponentItem?) {
+        println("Select item=${item?.id}")
+
+        if (item == null) {
+            _selectedItem.value = null
+        } else if (item.id == _selectedItem.value?.id) {
+            _selectedItem.value = null
+        } else {
+            _selectedItem.value = item
+        }
+    }
+
+    fun updateItem(updated: ComponentItem) {
+        println("Updated item=${updated.id}")
+        _items.value = _items.value.map { if (it.id == updated.id) updated else it }
+        _selectedItem.value = updated
+        buildJson()
+    }
+
 
     fun initData() {
         viewModelScope.launch {
@@ -110,7 +135,6 @@ class ListViewModel : ViewModel() {
             repo.saveJson(_jsonExport.value)
         }
     }
-
 
 
     fun removeItem(addedItem: ComponentItem) {

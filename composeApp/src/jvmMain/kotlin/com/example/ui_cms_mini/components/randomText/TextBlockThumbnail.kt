@@ -38,7 +38,7 @@ fun TextBlockThumbnail() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                ComponentType.TEXT_BLOCK.name,
+                ComponentType.TEXT_BLOCK.title,
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.DarkGray,
                 modifier = Modifier.align(Alignment.Start)

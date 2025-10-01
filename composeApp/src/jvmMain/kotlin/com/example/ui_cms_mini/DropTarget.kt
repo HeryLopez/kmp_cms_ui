@@ -48,7 +48,7 @@ fun DropTarget(id: Int, viewModel: ListViewModel) {
     var showTargetBorder by remember { mutableStateOf(false) }
     var targetText by remember { mutableStateOf("Drop Here") }
 
-    val dragAndDropTarget = remember {
+    val dragAndDropTarget = remember(id) {
         object : DragAndDropTarget {
 
             // Highlights the border of a potential drop target

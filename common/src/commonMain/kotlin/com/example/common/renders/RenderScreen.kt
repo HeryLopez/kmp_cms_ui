@@ -44,32 +44,6 @@ fun RenderScreen(jsonList: List<String>) {
                 }
             }
         }
-
-        // Solo en desktop: mostrar JSON generado
-        if (platform() == "desktop") {
-            HorizontalDivider()
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(8.dp)
-            ) {
-                Text(
-                    text = "JSON generado:",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-
-                TextField(
-                    value = jsonList.joinToString(separator = "\n"),
-                    onValueChange = {},
-                    readOnly = true,
-                    modifier = Modifier.fillMaxSize(),
-                    singleLine = false,
-                    maxLines = 20
-                )
-            }
-        }
     }
 }
 

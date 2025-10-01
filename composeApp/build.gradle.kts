@@ -40,9 +40,6 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
 
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
         jvmMain.dependencies {
             implementation(project(":common"))
             implementation(compose.desktop.currentOs)

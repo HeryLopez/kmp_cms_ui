@@ -2,6 +2,7 @@ package com.example.ui_cms_mini.components.imageBlock
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -45,7 +46,7 @@ fun ImageBlockThumbnail() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                ComponentType.IMAGE_BLOCK.name,
+                ComponentType.IMAGE_BLOCK.title,
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.DarkGray,
                 modifier = Modifier.align(Alignment.Start)
@@ -53,12 +54,14 @@ fun ImageBlockThumbnail() {
 
             Spacer(Modifier.height(8.dp))
 
-            Box(
+            Column (
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .background(Color.LightGray, RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
+               // contentAlignment = Alignment.Center
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Placeholder de imagen
                 Image(
@@ -66,20 +69,11 @@ fun ImageBlockThumbnail() {
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(Color.Gray),
                     modifier = Modifier
-                        .height(20.dp)
-                        .width(20.dp)
+                        .height(40.dp)
+                        .width(60.dp)
                         .clip(RoundedCornerShape(16.dp))
                 )
-            }
 
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .background(Color.LightGray, RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
-            ) {
                 // Skeleton
                 Box(
                     modifier = Modifier
@@ -88,8 +82,6 @@ fun ImageBlockThumbnail() {
                         .background(Color.Gray, RoundedCornerShape(4.dp))
                 )
             }
-
-            Spacer(Modifier.height(8.dp))
         }
     }
 }
