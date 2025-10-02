@@ -68,7 +68,7 @@ fun main() = application {
 @Composable
 fun MainContent(viewModel: ListViewModel) {
 
-    var componentsPanelWidth by remember { mutableStateOf(320.dp) }
+    var componentsPanelWidth by remember { mutableStateOf(200.dp) }
     var propsPanelWidth by remember { mutableStateOf(300.dp) }
     var previewPanelWidth by remember { mutableStateOf(400.dp) }
 

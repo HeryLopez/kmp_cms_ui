@@ -24,6 +24,12 @@ enum class ComponentType(val type: String, val title: String) {
     TEXT_BLOCK("text_component", "Text Block"),
     IMAGE_BLOCK("image_component", "Image Block"),
     BUTTON_BLOCK("button_component", "Button Block");
+
+    companion object {
+        fun fromType(type: String): ComponentType? {
+            return ComponentType.entries.firstOrNull { it.type == type }
+        }
+    }
 }
 
 @Serializable
@@ -33,6 +39,8 @@ sealed class LayoutNode {
     data class Container(
         val id: String = generateId(),
         val orientation: Orientation = Orientation.Column,
+        val padding: Float = 0f,
+        val backgroundColor: String = "#FFFFFF" ,
         val children: List<LayoutNode> = listOf()
     ) : LayoutNode()
 

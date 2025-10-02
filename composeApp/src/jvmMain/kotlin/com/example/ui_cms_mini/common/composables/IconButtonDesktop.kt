@@ -36,6 +36,7 @@ fun IconButtonDesktop(
     textColor: Color = Color.Black,
     rippleRounded: Dp = 32.dp,
     expand: Boolean = false,
+    iconSize: Dp = 20.dp,
     onClick: () -> Unit
 ) {
     val shape = when (rippleRounded) {
@@ -66,8 +67,8 @@ fun IconButtonDesktop(
             contentDescription = null,
             colorFilter = ColorFilter.tint(iconColor),
             modifier = Modifier
-                .height(20.dp)
-                .width(20.dp)
+                .height(iconSize)
+                .width(iconSize)
                 .clip(RoundedCornerShape(16.dp))
         )
         if (text != null) {

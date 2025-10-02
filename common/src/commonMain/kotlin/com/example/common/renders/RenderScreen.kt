@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,24 +20,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.common.model.ButtonComponent
-import com.example.common.model.ComponentItem
 import com.example.common.model.ImageComponent
 import com.example.common.model.LayoutNode
 import com.example.common.model.TextComponent
+import com.example.common.utils.ColorUtils
 import com.example.common.utils.ComponentJsonMapper
 import com.example.common.utils.textColorForContrast
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonContentPolymorphicSerializer
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
-
-
-
 
 @Composable
 fun RenderScreen(json: String) {
@@ -60,10 +46,16 @@ fun RenderScreen(json: String) {
 fun RenderNode(node: LayoutNode) {
     when (node) {
         is LayoutNode.Container -> {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = ColorUtils.hexToColor(node.backgroundColor))
+                    .padding(node.padding.dp)
+            ) {
                 node.children.forEach { RenderNode(it) }
             }
         }
+
         is LayoutNode.Component -> {
             when (val c = node.component) {
                 is TextComponent -> RenderTextComponent(c)

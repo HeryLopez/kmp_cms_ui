@@ -310,6 +310,56 @@ class ListViewModel : ViewModel() {
     }
 
 
+    /**
+     * Actualiza un Container de manera recursiva por su ID.
+     */
+    fun updateContainerRecursive(
+        node: LayoutNode,
+        containerIdToUpdate: String,
+        transform: (LayoutNode.Container) -> LayoutNode.Container
+    ): LayoutNode {
+        return when (node) {
+            is LayoutNode.Component -> node // No hacemos nada con los componentes
+            is LayoutNode.Container -> {
+                var changed = false
+
+                val newChildren = node.children.map { child ->
+                    val updatedChild = updateContainerRecursive(child, containerIdToUpdate, transform)
+                    if (updatedChild !== child) changed = true
+                    updatedChild
+                }
+
+                // Si este es el container que queremos actualizar
+                val updatedNode = if (node.id == containerIdToUpdate) {
+                    transform(node.copy(children = newChildren))
+                } else if (changed) {
+                    node.copy(children = newChildren)
+                } else node
+
+                updatedNode
+            }
+        }
+    }
+
+    /**
+     * Método público para actualizar un Container desde ViewModel
+     */
+    fun updateContainer(containerId: String, updated: LayoutNode.Container) {
+        val newRoot = updateContainerRecursive(_rootNode.value, containerId) {
+            // Aquí reemplazamos el container con la nueva versión
+            updated
+        }
+
+        // Si cambió, reemplazamos la raíz
+        if (newRoot !== _rootNode.value) {
+            _rootNode.value = newRoot as LayoutNode.Container
+        }
+
+        buildJson()
+        syncInServer()
+    }
+
+
     fun initData() {
         viewModelScope.launch {
             _loading.value = true
