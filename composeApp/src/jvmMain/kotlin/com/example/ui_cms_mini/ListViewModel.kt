@@ -2,8 +2,8 @@ package com.example.ui_cms_mini
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import com.example.common.model.ButtonComponent
 import com.example.common.model.ComponentItem
-import com.example.common.model.ComponentType
 import com.example.common.model.ImageComponent
 import com.example.common.model.TextComponent
 import com.example.common.repository.ComponentRepository
@@ -15,10 +15,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import kotlin.random.Random
+import com.example.common.model.LayoutNode
+import com.example.common.model.NodeType
+import com.example.common.utils.ComponentJsonMapper
 
 class ListViewModel : ViewModel() {
 
@@ -26,135 +27,324 @@ class ListViewModel : ViewModel() {
 
     private val repo = ComponentRepository("http://localhost:9090")
 
-    private val _items = MutableStateFlow<List<ComponentItem>>(emptyList())
-    val items: StateFlow<List<ComponentItem>> = _items
+    private val _rootNode = MutableStateFlow(LayoutNode.Container())
+    val rootNode: StateFlow<LayoutNode.Container> = _rootNode
 
-    private val _jsonExport = MutableStateFlow<List<String>>(emptyList())
-    val jsonExport: StateFlow<List<String>> = _jsonExport
+    private val _selectedNode = MutableStateFlow<LayoutNode?>(null)
+    val selectedNode = _selectedNode
+
+    private val _jsonExport = MutableStateFlow("")
+    val jsonExport: StateFlow<String> = _jsonExport
 
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading
 
-    // Item seleccionado
-    private val _selectedItem = MutableStateFlow<ComponentItem?>(null)
-    val selectedItem = _selectedItem.asStateFlow()
 
     init {
         initData()
     }
 
-    fun selectItem(item: ComponentItem?) {
-        println("Select item=${item?.id}")
 
-        if (item == null) {
-            _selectedItem.value = null
-        } else if (item.id == _selectedItem.value?.id) {
-            _selectedItem.value = null
+    fun selectItem(node: LayoutNode) {
+        _selectedNode.value = node
+    }
+
+    fun clearSelection() {
+        _selectedNode.value = null
+    }
+
+    fun LayoutNode.Container.deepCopy(): LayoutNode.Container {
+        return LayoutNode.Container(
+            id = this.id,
+            orientation = this.orientation,
+            // Mapeamos los hijos para crear nuevas copias inmutables
+            children = this.children.map { child ->
+                when (child) {
+                    // Copia recursiva para Container
+                    is LayoutNode.Container -> child.deepCopy()
+                    // Copia de datos (shallow copy) para Componente
+                    is LayoutNode.Component -> child.copy()
+                }
+            }
+        )
+    }
+
+    fun addComponentToContainer(containerId: String, type: NodeType) {
+        val newNode = createComponent(type)
+        // 1. Creamos la nueva jerarquía inmutable
+        val newRoot = addNodeToContainer(_rootNode.value, containerId, newNode)
+        // 2. Reemplazamos la raíz, forzando la emisión del StateFlow
+        _rootNode.value = newRoot
+
+        buildJson()
+        syncInServer()
+    }
+
+    fun removeComponentFromContainer(containerId: String, component: LayoutNode.Component) {
+        // Usamos la función de eliminación recursiva
+        val newRoot = removeNodeById(_rootNode.value, component.id)
+        // Reemplazamos la raíz
+        _rootNode.value = newRoot
+        buildJson()
+        syncInServer()
+    }
+
+
+    private fun findContainerById(
+        root: LayoutNode.Container,
+        containerId: String
+    ): LayoutNode.Container? {
+        if (root.id == containerId) return root
+        for (child in root.children) {
+            if (child is LayoutNode.Container) {
+                val found = findContainerById(child, containerId)
+                if (found != null) return found
+            }
+        }
+        return null
+    }
+
+    /**
+     * Inserta un nuevo nodo en el contenedor especificado.
+     *
+     * NOTA: Esta función DEBE RECONSTRUIR la ruta desde el nodo modificado
+     * hasta la raíz para mantener la inmutabilidad.
+     */
+    fun addNodeToContainer(
+        root: LayoutNode.Container,
+        containerId: String,
+        newNode: LayoutNode
+    ): LayoutNode.Container {
+        if (root.id == containerId) {
+            // Encontramos el contenedor. Creamos una nueva instancia
+            // con la nueva lista de hijos.
+            return root.copy(children = root.children + newNode)
+        }
+
+        // Recorremos los hijos recursivamente.
+        val newChildren = root.children.map { child ->
+            if (child is LayoutNode.Container) {
+                // Intentamos modificar el hijo Container
+                val updatedChild = addNodeToContainer(child, containerId, newNode)
+                if (updatedChild !== child) {
+                    // Si el hijo fue modificado, devolvemos el hijo modificado
+                    return@map updatedChild
+                }
+            }
+            // Devolvemos el hijo sin cambios
+            return@map child
+        }
+
+        // Si la lista de hijos ha cambiado (porque se modificó uno de sus descendientes),
+        // creamos una copia de la raíz con los nuevos hijos.
+        return if (newChildren !== root.children) {
+            root.copy(children = newChildren)
         } else {
-            _selectedItem.value = item
+            root
         }
     }
 
-    fun updateItem(updated: ComponentItem) {
-        println("Updated item=${updated.id}")
-        _items.value = _items.value.map { if (it.id == updated.id) updated else it }
-        _selectedItem.value = updated
-        buildJson()
-    }
+    /**
+     * Elimina un nodo por su ID del contenedor.
+     */
+    fun removeNodeById(root: LayoutNode.Container, nodeIdToRemove: String): LayoutNode.Container {
+        // 1. Intentamos filtrar al nodo de los hijos directos
+        val newChildren = root.children.filter { it.nodeId != nodeIdToRemove }
 
+        // 2. Si la cantidad de hijos ha cambiado, significa que el nodo fue eliminado aquí.
+        if (newChildren.size < root.children.size) {
+            return root.copy(children = newChildren)
+        }
 
-    fun initData() {
-        viewModelScope.launch {
-            _loading.value = true
-            val components = repo.getAll()
-            //delay(5000)
-            addAllItems(components)
-            _loading.value = false
+        // 3. Si no se eliminó aquí, navegamos recursivamente.
+        val childrenAfterRecursiveRemoval = root.children.map { child ->
+            if (child is LayoutNode.Container) {
+                val updatedChild = removeNodeById(child, nodeIdToRemove)
+                if (updatedChild !== child) {
+                    return@map updatedChild // Devolvemos el contenedor hijo actualizado
+                }
+            }
+            return@map child // Devolvemos el nodo sin cambios
+        }
+
+        // 4. Si la lista de hijos cambió a través de la recursión, copiamos la raíz.
+        return if (childrenAfterRecursiveRemoval !== root.children) {
+            root.copy(children = childrenAfterRecursiveRemoval)
+        } else {
+            root
         }
     }
 
-    fun addAllItems(items: List<ComponentItem>) {
-        _items.value = items.sortedBy { it.id }
-        buildJson()
-    }
 
-    fun addItem(item: ComponentItem) {
-        val updated = (_items.value + item).sortedBy { it.id }
-        _items.value = updated
-        buildJson()
+    /**
+     * Función que busca un nodo por ID y aplica una transformación,
+     * devolviendo la nueva sub-jerarquía inmutable.
+     *
+     * @param node El nodo actual (puede ser Container o Component).
+     * @param nodeIdToUpdate El ID del nodo a buscar.
+     * @param transform La lambda que define cómo crear la nueva copia del nodo encontrado.
+     * @return El nuevo nodo (o la nueva sub-jerarquía) si hubo un cambio, o el nodo original si no.
+     */
+    fun updateNodeRecursive(
+        node: LayoutNode,
+        nodeIdToUpdate: String,
+        transform: (LayoutNode.Component) -> LayoutNode.Component
+    ): LayoutNode {
+        when (node) {
+            is LayoutNode.Component -> {
+                // Caso Base: Encontramos el componente
+                return if (node.id == nodeIdToUpdate) {
+                    // Aplicamos la transformación y devolvemos la nueva copia del Component
+                    transform(node)
+                } else {
+                    // Devolvemos el nodo original si no coincide
+                    node
+                }
+            }
 
-        viewModelScope.launch {
-            repo.saveJson(_jsonExport.value)
+            is LayoutNode.Container -> {
+                var changed = false
+                // 1. Mapeamos los hijos para crear la nueva lista
+                val newChildren = node.children.map { child ->
+                    // Llamada recursiva para procesar los hijos
+                    val updatedChild = updateNodeRecursive(child, nodeIdToUpdate, transform)
+
+                    // Verificamos si la referencia del hijo ha cambiado
+                    if (updatedChild !== child) {
+                        changed = true
+                    }
+                    return@map updatedChild
+                }
+
+                // 2. Si algún hijo ha cambiado, creamos una nueva copia del Container
+                return if (changed) {
+                    node.copy(children = newChildren)
+                } else {
+                    // Si no hay cambios en la sub-rama, devolvemos el Container original
+                    node
+                }
+            }
         }
     }
 
-    fun addItem(dropId: Int, componentType: String) {
-        // Creamos un componente dummy según el tipo
-        val item: ComponentItem = when (componentType) {
-            ComponentType.TEXT_BLOCK.type -> {
+
+    private fun createComponent(type: NodeType): LayoutNode {
+
+        val nodeId = LayoutNode.generateId()
+
+        val item: LayoutNode = when (type) {
+            NodeType.CONTAINER -> {
+                LayoutNode.Container()
+            }
+
+            NodeType.TEXT_BLOCK -> {
                 val text = BuilderUtils.generateRandomText()
                 val color = Color(
                     red = Random.nextFloat(),
                     green = Random.nextFloat(),
                     blue = Random.nextFloat()
                 )
-                TextComponent(
-                    id = dropId,
-                    text = text,
-                    color = color.toHex()
+                LayoutNode.Component(
+                    component = TextComponent(
+                        id = nodeId,
+                        text = text,
+                        color = color.toHex()
+                    )
                 )
             }
 
-            ComponentType.IMAGE_BLOCK.type -> {
+            NodeType.IMAGE_BLOCK -> {
                 val title = BuilderUtils.generateRandomText()
                 val titleColor = Color(
                     red = Random.nextFloat(),
                     green = Random.nextFloat(),
                     blue = Random.nextFloat()
                 )
-                ImageComponent(
-                    id = dropId,
-                    title = title,
-                    titleColor = titleColor.toHex(),
-                    backgroundImageUrl = "https://picsum.photos/300/200?random=${Random.nextInt(1000)}"
+                LayoutNode.Component(
+                    component = ImageComponent(
+                        id = nodeId,
+                        title = title,
+                        titleColor = titleColor.toHex(),
+                        backgroundImageUrl = "https://picsum.photos/300/200?random=${
+                            Random.nextInt(
+                                1000
+                            )
+                        }"
+                    )
                 )
             }
 
-            else -> throw IllegalArgumentException("Unknown component type: $componentType")
+            NodeType.BUTTON_BLOCK -> {
+                val title = BuilderUtils.generateRandomText()
+                LayoutNode.Component(
+                    component = ButtonComponent(
+                        id = nodeId,
+                        text = title,
+                        actionType = "link",
+                        actionValue = "https://www.google.com"
+                    )
+                )
+            }
         }
-
-        // Agregar al estado
-        val updated = (_items.value + item).sortedBy { it.id }
-        _items.value = updated
-
-        // Reconstruir JSON
-        buildJson()
-
-        // Guardar en repo
-        viewModelScope.launch {
-            repo.saveJson(_jsonExport.value)
-        }
+        return item
     }
 
 
-    fun removeItem(addedItem: ComponentItem) {
-        val updatedList = _items.value.filter { i -> i.id != addedItem.id }
-        _items.value = updatedList
-        buildJson()
+    fun updateComponent(nodeId: String, updated: ComponentItem) {
+        // La lambda de transformación crea el nuevo componente inmutable
+        val newRoot = updateNodeRecursive(_rootNode.value, nodeId) { componentNode ->
+            // Aquí creamos la nueva instancia del Component con el nuevo 'component'
+            componentNode.copy(component = updated)
+        }
 
+        // 1. Comprobamos si la referencia de la raíz ha cambiado (indicando que hubo una actualización)
+        if (newRoot !== _rootNode.value) {
+            // 2. Reemplazamos la raíz, forzando la emisión del StateFlow y la recomposición
+            _rootNode.value = newRoot as LayoutNode.Container
+
+            // buildJson()
+            // syncInServer()
+        }
+        buildJson()
+        syncInServer()
+    }
+
+
+    fun initData() {
         viewModelScope.launch {
-            repo.saveJson(_jsonExport.value)
+            _loading.value = true
+            try {
+                val jsonString = repo.getJson()
+                if (jsonString.isNotBlank()) {
+                    val container = ComponentJsonMapper.fromJson(jsonString)
+                    _rootNode.value = container
+                } else {
+                    _rootNode.value = LayoutNode.Container()
+                }
+                buildJson()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _rootNode.value = LayoutNode.Container()
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    private fun syncInServer() {
+        viewModelScope.launch {
+            try {
+                repo.saveJson(_jsonExport.value)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
     private fun buildJson() {
-        _jsonExport.value = _items.value
-            .sortedBy { it.id }
-            .map { item ->
-                val mapWithId = item.toMap().toMutableMap()
-                mapWithId["id"] = item.id.toString()
-                Json.Default.encodeToString(mapWithId)
-            }
+
+        val json = ComponentJsonMapper.toJson(_rootNode.value)
+        _jsonExport.value = json
     }
 
     override fun onCleared() {

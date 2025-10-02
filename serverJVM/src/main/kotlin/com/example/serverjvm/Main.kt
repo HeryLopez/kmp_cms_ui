@@ -20,7 +20,7 @@ fun main() {
         routing {
             get("/jsonlist") {
                 val json: String? = fetchItem()
-                call.respond(json ?: "[]")
+                call.respond(json ?: "")
             }
 
             post("/jsonlist") {

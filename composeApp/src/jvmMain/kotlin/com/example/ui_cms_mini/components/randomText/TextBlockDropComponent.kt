@@ -1,5 +1,6 @@
 package com.example.ui_cms_mini.components.randomText
 
+import IconButtonDesktop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.common.model.TextComponent
-import com.example.ui_cms_mini.common.composables.IconButtonDesktop
 import ui_cms_mini.composeapp.generated.resources.Res
 import ui_cms_mini.composeapp.generated.resources.delete_icon
 

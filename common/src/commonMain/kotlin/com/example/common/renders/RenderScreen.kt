@@ -3,50 +3,76 @@ package com.example.common.renders
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.common.model.ButtonComponent
 import com.example.common.model.ComponentItem
 import com.example.common.model.ImageComponent
+import com.example.common.model.LayoutNode
 import com.example.common.model.TextComponent
-import com.example.common.platform
 import com.example.common.utils.ComponentJsonMapper
 import com.example.common.utils.textColorForContrast
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
+
+
+
 
 @Composable
-fun RenderScreen(jsonList: List<String>) {
-    val items: List<ComponentItem> = ComponentJsonMapper.fromJson(jsonList)
+fun RenderScreen(json: String) {
+    val layoutNode: LayoutNode? = try {
+        ComponentJsonMapper.fromJson(json)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.weight(2f)
-        ) {
-            items(items) { item ->
-                when (item) {
-                    is TextComponent -> RenderTextComponent(item)
-                    is ImageComponent -> RenderImageComponent(item)
-                    // 🧩 En el futuro: simplemente agregas
-                    // is ButtonComponent -> RenderButtonComponent(item)
-                }
+    layoutNode?.let {
+        RenderNode(it)
+    }
+}
+
+
+@Composable
+fun RenderNode(node: LayoutNode) {
+    when (node) {
+        is LayoutNode.Container -> {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                node.children.forEach { RenderNode(it) }
+            }
+        }
+        is LayoutNode.Component -> {
+            when (val c = node.component) {
+                is TextComponent -> RenderTextComponent(c)
+                is ImageComponent -> RenderImageComponent(c)
+                is ButtonComponent -> RenderButtonComponent(c)
             }
         }
     }
 }
-
 
 @Composable
 fun RenderTextComponent(component: TextComponent) {
@@ -93,3 +119,27 @@ fun RenderImageComponent(component: ImageComponent) {
     }
 }
 
+@Composable
+fun RenderButtonComponent(component: ButtonComponent) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Button(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF1976D2), // Azul por defecto
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(
+                text = component.text,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}

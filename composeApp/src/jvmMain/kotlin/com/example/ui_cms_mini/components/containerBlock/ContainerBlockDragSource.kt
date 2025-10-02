@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini.components.imageBlock
+package com.example.ui_cms_mini.components.containerBlock
 
 import androidx.compose.foundation.draganddrop.dragAndDropSource
 import androidx.compose.foundation.layout.Box
@@ -16,7 +16,6 @@ import androidx.compose.ui.draganddrop.DragAndDropTransferable
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.example.common.model.ComponentType
 import com.example.common.model.NodeType
 import kotlinx.coroutines.Dispatchers
 import java.awt.datatransfer.StringSelection
@@ -24,7 +23,7 @@ import java.awt.datatransfer.StringSelection
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ImageBlockDragSource() {
+fun ContainerBlockDragSource() {
     val density = LocalDensity.current
 
     val sizeDp = 120.dp
@@ -38,7 +37,7 @@ fun ImageBlockDragSource() {
             density = density,
             coroutineContext = Dispatchers.Unconfined
         ) {
-            ImageBlockThumbnail()
+            ContainerBlockThumbnail()
         }
     }
 
@@ -59,7 +58,7 @@ fun ImageBlockDragSource() {
 
                 DragAndDropTransferData(
                     transferable = DragAndDropTransferable(
-                        StringSelection(NodeType.IMAGE_BLOCK.type)
+                        StringSelection(NodeType.CONTAINER.type)
                     ),
 
                     // List of actions supported by this drag source. A type of action
@@ -79,6 +78,6 @@ fun ImageBlockDragSource() {
             },
         contentAlignment = Alignment.Center
     ) {
-        ImageBlockThumbnail()
+        ContainerBlockThumbnail()
     }
 }

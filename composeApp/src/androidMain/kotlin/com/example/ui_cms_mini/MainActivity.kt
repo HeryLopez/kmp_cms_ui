@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ContentComposable() {
     val repo = ComponentRepository("http://10.0.2.2:9090")
-    var jsonList by remember { mutableStateOf<List<String>>(emptyList()) }
+    var jsonList by remember { mutableStateOf<String>("") }
     var isLoading by remember { mutableStateOf(false) }
 
     // Función para cargar datos
@@ -66,7 +66,7 @@ fun ContentComposable() {
         isLoading = true
         try {
             delay(1000)
-            jsonList = repo.getJsonItems()
+            jsonList = repo.getJson()
         } catch (e: Exception) {
             Log.e("ContentComposable", "Error fetching data", e)
         } finally {

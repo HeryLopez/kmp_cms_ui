@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.example.common.model.ComponentType
+import com.example.common.model.NodeType
 import kotlinx.coroutines.Dispatchers
 import java.awt.datatransfer.StringSelection
 
@@ -60,7 +61,7 @@ fun TextBlockDragSource() {
 
                 DragAndDropTransferData(
                     transferable = DragAndDropTransferable(
-                        StringSelection(ComponentType.TEXT_BLOCK.type)
+                        StringSelection(NodeType.TEXT_BLOCK.type)
                     ),
 
                     // List of actions supported by this drag source. A type of action

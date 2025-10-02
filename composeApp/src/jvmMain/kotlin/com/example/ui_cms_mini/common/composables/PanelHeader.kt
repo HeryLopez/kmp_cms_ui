@@ -1,16 +1,20 @@
 package com.example.ui_cms_mini.common.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -20,13 +24,20 @@ fun PanelHeader(
     backgroundColor: Color = Color(0xFFE0E0E0),
     contentColor: Color = Color.Black,
     borderColor: Color = Color.Gray,
-    borderWidth: Float = 1f
+    borderWidth: Float = 1f,
+    onClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(40.dp)
+            .widthIn(min = 100.dp)
             .background(backgroundColor)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onClick,
+            )
             .drawBehind {
                 drawLine(
                     color = borderColor,
@@ -40,6 +51,8 @@ fun PanelHeader(
     ) {
         Text(
             text = title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis, //
             color = contentColor,
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
         )

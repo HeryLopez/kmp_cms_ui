@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini.components.imageBlock
+package com.example.ui_cms_mini.components.containerBlock
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,14 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
-import com.example.common.model.ComponentType
 import org.jetbrains.compose.resources.painterResource
 import ui_cms_mini.composeapp.generated.resources.Res
-import ui_cms_mini.composeapp.generated.resources.delete_icon
 import ui_cms_mini.composeapp.generated.resources.image_icon
 
 @Composable
-fun ImageBlockThumbnail() {
+fun ContainerBlockThumbnail() {
     Card(
         modifier = Modifier
 
@@ -47,8 +45,9 @@ fun ImageBlockThumbnail() {
                 .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Título
             Text(
-                ComponentType.IMAGE_BLOCK.title,
+                text = "Container Block",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.DarkGray,
                 modifier = Modifier.align(Alignment.Start)
@@ -56,7 +55,8 @@ fun ImageBlockThumbnail() {
 
             Spacer(Modifier.height(8.dp))
 
-            Column(
+            // Zona de previsualización
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -73,27 +73,32 @@ fun ImageBlockThumbnail() {
                             )
                         )
                     },
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                contentAlignment = Alignment.Center
             ) {
-                // Placeholder de imagen
-                Image(
-                    painter = painterResource(Res.drawable.image_icon),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(Color.LightGray),
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(60.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                )
-
-                // Skeleton
-                Box(
-                    modifier = Modifier
-                        .width(80.dp)
-                        .height(10.dp)
-                        .background(Color.LightGray, RoundedCornerShape(4.dp))
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Mini “bloques” representando hijos dentro del container
+                    Box(
+                        modifier = Modifier
+                            .width(80.dp)
+                            .height(14.dp)
+                            .background(Color.LightGray, RoundedCornerShape(4.dp))
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(60.dp)
+                            .height(14.dp)
+                            .background(Color.LightGray.copy(alpha = 0.8f), RoundedCornerShape(4.dp))
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(14.dp)
+                            .background(Color.LightGray.copy(alpha = 0.6f), RoundedCornerShape(4.dp))
+                    )
+                }
             }
         }
     }
