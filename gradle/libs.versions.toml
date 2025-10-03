@@ -15,6 +15,7 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 ktor = "3.3.0"
 kotlinStdlib = "2.2.20"
+material3Desktop = "1.8.2"
 materialIconsExtendedDesktop = "1.7.8"
 
 [libraries]
@@ -35,6 +36,7 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }       # JVM / Desktop
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+material3-desktop = { module = "org.jetbrains.compose.material3:material3-desktop", version.ref = "material3Desktop" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

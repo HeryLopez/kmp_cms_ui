@@ -1,14 +1,11 @@
 package com.example.ui_cms_mini
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.common.model.ButtonComponent
 import com.example.common.model.ComponentItem
 import com.example.common.model.ImageComponent
 import com.example.common.model.TextComponent
 import com.example.common.repository.ComponentRepository
-import com.example.common.utils.toHex
-import com.example.ui_cms_mini.builder.BuilderUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,6 +17,7 @@ import kotlin.random.Random
 import com.example.common.model.LayoutNode
 import com.example.common.model.NodeType
 import com.example.common.utils.ComponentJsonMapper
+import kotlin.String
 
 class ListViewModel : ViewModel() {
 
@@ -227,7 +225,6 @@ class ListViewModel : ViewModel() {
         }
     }
 
-
     private fun createComponent(type: NodeType): LayoutNode {
 
         val nodeId = LayoutNode.generateId()
@@ -238,48 +235,34 @@ class ListViewModel : ViewModel() {
             }
 
             NodeType.TEXT_BLOCK -> {
-                val text = BuilderUtils.generateRandomText()
-                val color = Color(
-                    red = Random.nextFloat(),
-                    green = Random.nextFloat(),
-                    blue = Random.nextFloat()
-                )
                 LayoutNode.Component(
                     component = TextComponent(
                         id = nodeId,
-                        text = text,
-                        color = color.toHex()
+                        text = "Text",
                     )
                 )
             }
 
             NodeType.IMAGE_BLOCK -> {
-                val title = BuilderUtils.generateRandomText()
-                val titleColor = Color(
-                    red = Random.nextFloat(),
-                    green = Random.nextFloat(),
-                    blue = Random.nextFloat()
-                )
                 LayoutNode.Component(
                     component = ImageComponent(
                         id = nodeId,
-                        title = title,
-                        titleColor = titleColor.toHex(),
-                        backgroundImageUrl = "https://picsum.photos/300/200?random=${
+                        title = "",
+                        backgroundImageUrl = "https://picsum.photos/id/${
                             Random.nextInt(
-                                1000
+                                from = 0,
+                                1084
                             )
-                        }"
+                        }/300/200"
                     )
                 )
             }
 
             NodeType.BUTTON_BLOCK -> {
-                val title = BuilderUtils.generateRandomText()
                 LayoutNode.Component(
                     component = ButtonComponent(
                         id = nodeId,
-                        text = title,
+                        text = "Text",
                         actionType = "link",
                         actionValue = "https://www.google.com"
                     )
@@ -324,7 +307,8 @@ class ListViewModel : ViewModel() {
                 var changed = false
 
                 val newChildren = node.children.map { child ->
-                    val updatedChild = updateContainerRecursive(child, containerIdToUpdate, transform)
+                    val updatedChild =
+                        updateContainerRecursive(child, containerIdToUpdate, transform)
                     if (updatedChild !== child) changed = true
                     updatedChild
                 }

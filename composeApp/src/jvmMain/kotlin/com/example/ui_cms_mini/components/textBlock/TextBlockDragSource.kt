@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini.components.randomText
+package com.example.ui_cms_mini.components.textBlock
 
 import androidx.compose.foundation.draganddrop.dragAndDropSource
 import androidx.compose.foundation.layout.Box
@@ -16,7 +16,6 @@ import androidx.compose.ui.draganddrop.DragAndDropTransferable
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.example.common.model.ComponentType
 import com.example.common.model.NodeType
 import kotlinx.coroutines.Dispatchers
 import java.awt.datatransfer.StringSelection

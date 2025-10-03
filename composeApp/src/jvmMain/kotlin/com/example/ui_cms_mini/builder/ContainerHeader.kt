@@ -50,7 +50,6 @@ fun ContainerHeader(
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black.copy(alpha = 0.8F)
-
                 )
             )
             IconButtonDesktop(

@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini.properties
+package com.example.ui_cms_mini.components.containerBlock
 
 import androidx.compose.runtime.Composable
 import com.example.common.model.LayoutNode
@@ -31,7 +31,7 @@ import com.example.common.model.Orientation
 import com.example.common.utils.toHex
 
 @Composable
-fun ContainerPropsEditor(
+fun ContainerBlockPropsEditor(
     container: LayoutNode.Container,
     onUpdate: (LayoutNode.Container) -> Unit
 ) {

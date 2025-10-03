@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,12 +41,11 @@ import com.example.ui_cms_mini.common.composables.PanelHeader
 import com.example.ui_cms_mini.common.composables.VerticalResizeHandle
 import com.example.ui_cms_mini.components.containerBlock.ContainerBlockDragSource
 import com.example.ui_cms_mini.components.imageBlock.ImageBlockDragSource
-import com.example.ui_cms_mini.components.randomText.TextBlockDragSource
+import com.example.ui_cms_mini.components.textBlock.TextBlockDragSource
 import com.example.ui_cms_mini.console.ConsolePanel
 import com.example.ui_cms_mini.preview.PreviewMobile
 import com.example.ui_cms_mini.properties.PropertiesPanel
 import ui_cms_mini.composeapp.generated.resources.Res
-import ui_cms_mini.composeapp.generated.resources.delete_icon
 import ui_cms_mini.composeapp.generated.resources.preview_icon
 import ui_cms_mini.composeapp.generated.resources.props_icon
 
@@ -69,7 +67,7 @@ fun main() = application {
 fun MainContent(viewModel: ListViewModel) {
 
     var componentsPanelWidth by remember { mutableStateOf(200.dp) }
-    var propsPanelWidth by remember { mutableStateOf(300.dp) }
+    var propsPanelWidth by remember { mutableStateOf(400.dp) }
     var previewPanelWidth by remember { mutableStateOf(400.dp) }
 
     var consoleHigh by remember { mutableStateOf(200.dp) }
@@ -78,8 +76,8 @@ fun MainContent(viewModel: ListViewModel) {
     val componentsMax = 500.dp
     val centerMin = 200.dp
     val centerMax = 500.dp
-    val propsMin = 0.dp
-    val propsMax = 350.dp
+
+
     val previewMin = 0.dp
     val previewMax = 450.dp
 
@@ -193,7 +191,7 @@ fun MainContent(viewModel: ListViewModel) {
                 VerticalResizeHandle(
                     color = propsColor,
                     onDrag = { delta ->
-                        val newWidth = (propsPanelWidth - delta).coerceIn(propsMin, propsMax)
+                        val newWidth = (propsPanelWidth - delta).coerceIn(Constants.PROPS_MIN, Constants.PROPS_MAX)
                         propsPanelWidth = newWidth
                     }
                 )
@@ -208,7 +206,7 @@ fun MainContent(viewModel: ListViewModel) {
                             .background(propsColor)
                     ) {
                         PanelHeader(title = "Properties", backgroundColor = propsColor)
-                        PropertiesPanel(viewModel)
+                        PropertiesPanel(viewModel, propsPanelWidth)
                     }
                 }
 
@@ -271,7 +269,7 @@ fun MainContent(viewModel: ListViewModel) {
                             rippleRounded = 6.dp,
                             expand = true,
                             onClick = {
-                                propsPanelWidth = if (propsPanelWidth > 0.dp) 0.dp else propsMax
+                                propsPanelWidth = if (propsPanelWidth > 0.dp) 0.dp else Constants.PROPS_MAX
                             }
                         )
                     }

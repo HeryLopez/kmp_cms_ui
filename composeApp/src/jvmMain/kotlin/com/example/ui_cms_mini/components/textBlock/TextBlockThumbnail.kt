@@ -1,4 +1,4 @@
-package com.example.ui_cms_mini.components.randomText
+package com.example.ui_cms_mini.components.textBlock
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

@@ -43,6 +43,7 @@ kotlin {
         jvmMain.dependencies {
             implementation(project(":common"))
             implementation(compose.desktop.currentOs)
+            implementation(libs.material3.desktop)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation(libs.ktor.client.cio)
             implementation(libs.androidx.foundation.desktop)

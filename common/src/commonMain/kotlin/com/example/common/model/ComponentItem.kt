@@ -2,6 +2,11 @@ package com.example.common.model
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import com.example.common.utils.ColorUtils
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -40,7 +45,7 @@ sealed class LayoutNode {
         val id: String = generateId(),
         val orientation: Orientation = Orientation.Column,
         val padding: Float = 0f,
-        val backgroundColor: String = "#FFFFFF" ,
+        val backgroundColor: String? = null,
         val children: List<LayoutNode> = listOf()
     ) : LayoutNode()
 
@@ -56,6 +61,7 @@ sealed class LayoutNode {
             is Container -> this.id
             is Component -> this.id
         }
+
     companion object {
         fun generateId() = java.util.UUID.randomUUID().toString()
     }
@@ -79,10 +85,46 @@ data class TextComponent(
     @SerialName("componentType")
     override val type: String = ComponentType.TEXT_BLOCK.type,
     val text: String,
-    val color: String
+    val textColor: String? = null,
+    val backgroundColor: String? = null,
+    val fontSize: Float? = null,
+    val fontWeight: String? = null,
+    val fontStyle: String? = null,
+    val textAlign: String? = null
 ) : ComponentItem {
-    val colorColor: Color
-        get() = ColorUtils.hexToColor(color)
+    val textColorValue: Color?
+        get() = ColorUtils.hexToColor(textColor)
+
+    val backgroundColorValue: Color?
+        get() = ColorUtils.hexToColor(backgroundColor)
+
+
+    val fontWeightValue: FontWeight
+        get() = when (fontWeight?.lowercase()) {
+            "bold" -> FontWeight.Bold
+            "medium" -> FontWeight.Medium
+            "light" -> FontWeight.Light
+            "thin" -> FontWeight.Thin
+            "black" -> FontWeight.Black
+            else -> FontWeight.Normal
+        }
+
+    val fontStyleValue: FontStyle
+        get() = when (fontStyle?.lowercase()) {
+            "italic" -> FontStyle.Italic
+            else -> FontStyle.Normal
+        }
+
+    val fontSizeValue: TextUnit
+        get() = fontSize?.sp ?: 14.sp
+
+    val textAlignValue: TextAlign
+        get() = when (textAlign?.lowercase()) {
+            "start" -> TextAlign.Start
+            "center" -> TextAlign.Center
+            "end" -> TextAlign.End
+            else -> TextAlign.Start
+        }
 }
 
 @Serializable
@@ -93,9 +135,17 @@ data class ImageComponent(
     override val type: String = ComponentType.IMAGE_BLOCK.type,
     val title: String,
     val backgroundImageUrl: String,
-    val titleColor: String
+    val titleColor: String? = null,
+    // Corner Shape
+    val topStartRadius: Float = 0f,
+    val topEndRadius: Float = 0f,
+    val bottomStartRadius: Float = 0f,
+    val bottomEndRadius: Float = 0f,
+    // Dimensions
+    val width: Float? = null,
+    val height: Float? = null
 ) : ComponentItem {
-    val titleColorColor: Color
+    val titleColorValue: Color?
         get() = ColorUtils.hexToColor(titleColor)
 }
 
