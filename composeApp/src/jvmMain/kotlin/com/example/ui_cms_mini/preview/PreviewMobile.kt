@@ -36,7 +36,8 @@ fun PreviewMobile(viewModel: ListViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(32.dp))
-                .background(Color.White, RoundedCornerShape(20.dp)).verticalScroll(scrollState)
+                .background(Color.White, RoundedCornerShape(20.dp))
+                //.verticalScroll(scrollState)
         ) {
             RenderScreen(jsonExport)
         }

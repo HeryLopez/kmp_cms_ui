@@ -29,14 +29,12 @@ fun RenderTextComponent(component: TextComponent) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = backgroundColor)
-            .padding(horizontal = 24.dp)
-            .padding(top = 16.dp),
-        contentAlignment = Alignment.Center
+            .background(color = backgroundColor),
+        contentAlignment = component.containerAlignment
     ) {
         Text(
             text = component.text,
-            style = textStyle
+            style = textStyle,
         )
     }
 }

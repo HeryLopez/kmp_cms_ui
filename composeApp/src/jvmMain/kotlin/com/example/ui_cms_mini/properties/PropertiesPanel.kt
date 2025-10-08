@@ -27,6 +27,7 @@ import com.example.common.model.TextComponent
 import com.example.ui_cms_mini.ListViewModel
 import com.example.ui_cms_mini.components.buttonBlock.ButtonBlockPropsEditor
 import com.example.ui_cms_mini.components.containerBlock.ContainerBlockPropsEditor
+import com.example.ui_cms_mini.components.containerMainBlock.ContainerMainBlockPropsEditor
 import com.example.ui_cms_mini.components.imageBlock.ImageBlockPropsEditor
 import com.example.ui_cms_mini.components.textBlock.TextBlockPropsEditor
 
@@ -54,7 +55,10 @@ fun PropertiesPanel(viewModel: ListViewModel, width: Dp) {
                     Text("No item selected")
                 }
             } else {
-                when (val node = selectedNode!!) {
+                val node = selectedNode!!.first
+                val isMainNode = selectedNode!!.second
+
+                when (val node = node) {
                     is LayoutNode.Component -> {
                         val component = node.component
 
@@ -81,16 +85,28 @@ fun PropertiesPanel(viewModel: ListViewModel, width: Dp) {
                     }
 
                     is LayoutNode.Container -> {
+
                         Box(
                             // It's important to set min width to avoid deforming content
                             modifier = Modifier
                                 .widthIn(min = 200.dp)
                                 .width(width)
-                                .padding(16.dp)
                         ) {
-                            ContainerBlockPropsEditor(node, onUpdate = { updated ->
-                                viewModel.updateContainer(node.id, updated)
-                            })
+                            if (isMainNode) {
+                                ContainerMainBlockPropsEditor(
+                                    container = node,
+                                    onUpdate = { updated ->
+                                        viewModel.updateContainer(node.id, updated)
+                                    }
+                                )
+                            } else {
+                                ContainerBlockPropsEditor(
+                                    container = node,
+                                    onUpdate = { updated ->
+                                        viewModel.updateContainer(node.id, updated)
+                                    }
+                                )
+                            }
                         }
                     }
 

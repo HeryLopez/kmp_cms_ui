@@ -1,29 +1,19 @@
 package com.example.ui_cms_mini.components.textBlock
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.common.model.ComponentType
 import com.example.common.model.TextComponent
+import com.example.common.utils.ColorUtils
+import com.example.ui_cms_mini.properties.common.ColorPickerProp
+import com.example.ui_cms_mini.properties.common.OptionButtonGroup
+import com.example.ui_cms_mini.properties.common.PropsGroup
 import com.example.ui_cms_mini.properties.common.PropsTitle
 import com.example.ui_cms_mini.properties.common.StyledTextField
 
@@ -45,214 +35,79 @@ fun TextBlockPropsEditor(
     var fontStyle by remember(component.id) { mutableStateOf(component.fontStyle ?: "normal") }
     var textAlign by remember(component.id) { mutableStateOf(component.textAlign ?: "start") }
 
+    fun updateComponent() {
+        onUpdate(
+            component.copy(
+                text = text,
+                textColor = textColor,
+                backgroundColor = backgroundColor,
+                fontSize = fontSize.toFloatOrNull(),
+                fontWeight = fontWeight,
+                fontStyle = fontStyle,
+                textAlign = textAlign
+            )
+        )
+    }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        Modifier.fillMaxWidth(),
     ) {
         PropsTitle(
             title = "Editing ${ComponentType.fromType(component.type)?.title}",
             id = "ID: ${component.id}",
         )
 
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+        PropsGroup(title = "Content") {
             StyledTextField(
                 label = "Text:",
                 singleLine = false,
                 value = text,
-                onValueChange = {
-                    text = it
-                    onUpdate(
-                        component.copy(
-                            text = text,
-                            textColor = textColor,
-                            backgroundColor = backgroundColor,
-                            fontSize = fontSize.toFloatOrNull(),
-                            fontWeight = fontWeight,
-                            fontStyle = fontStyle,
-                            textAlign = textAlign
-                        )
-                    )
-                }
+                onValueChange = { text = it; updateComponent() }
             )
 
-            StyledTextField(
-                label = "Text Color (Hex):",
-                value = textColor ?: "",
-                onValueChange = {
-                    textColor = it
-                    onUpdate(
-                        component.copy(
-                            text = text,
-                            textColor = textColor,
-                            backgroundColor = backgroundColor,
-                            fontSize = fontSize.toFloatOrNull(),
-                            fontWeight = fontWeight,
-                            fontStyle = fontStyle,
-                            textAlign = textAlign
-                        )
-                    )
-                }
-            )
-
-            StyledTextField(
-                label = "Background Color (Hex):",
-                value = backgroundColor ?: "",
-                onValueChange = {
-                    backgroundColor = it
-                    onUpdate(
-                        component.copy(
-                            text = text,
-                            textColor = textColor,
-                            backgroundColor = backgroundColor,
-                            fontSize = fontSize.toFloatOrNull(),
-                            fontWeight = fontWeight,
-                            fontStyle = fontStyle,
-                            textAlign = textAlign
-                        )
-                    )
-                }
-            )
+            ColorPickerProp(
+                "Background Color",
+                backgroundColor
+            ) { backgroundColor = it; updateComponent() }
+        }
 
 
+        PropsGroup(title = "Color") {
+            ColorPickerProp(
+                "Text Color",
+                textColor
+            ) { textColor = it; updateComponent() }
+        }
+
+        PropsGroup(title = "Typography") {
             StyledTextField(
                 label = "Font Size (sp):",
-                value = fontSize, onValueChange = {
-                    fontSize = it
-                    onUpdate(
-                        component.copy(
-                            text = text,
-                            textColor = textColor,
-                            backgroundColor = backgroundColor,
-                            fontSize = fontSize.toFloatOrNull(),
-                            fontWeight = fontWeight,
-                            fontStyle = fontStyle,
-                            textAlign = textAlign
-                        )
-                    )
-                }
+                value = fontSize,
+                onValueChange = { fontSize = it; updateComponent() }
             )
 
-            // Peso de fuente
-            Text(
-                "Font Weight:",
-                style = TextStyle(
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black.copy(alpha = 0.8f)
-                )
+            OptionButtonGroup(
+                label = "Font Weight:",
+                options = listOf("Normal", "Bold", "Medium", "Light", "Thin", "Black"),
+                selectedOption = fontWeight,
+                onSelect = { fontWeight = it; updateComponent() }
             )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
-                listOf("Normal", "Bold", "Medium", "Light", "Thin", "Black").forEach { option ->
-                    Button(
-                        onClick = {
-                            fontWeight = option
-                            onUpdate(
-                                component.copy(
-                                    text = text,
-                                    textColor = textColor,
-                                    backgroundColor = backgroundColor,
-                                    fontSize = fontSize.toFloatOrNull(),
-                                    fontWeight = fontWeight,
-                                    fontStyle = fontStyle,
-                                    textAlign = textAlign
-                                )
-                            )
-                        },
-                        enabled = fontWeight != option
-                    ) {
-                        Text(
-                            option,
-                            style = TextStyle(
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        )
-                    }
-                }
-            }
 
-            // Estilo de fuente
-            Text(
-                "Font Style:",
-                style = TextStyle(
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black.copy(alpha = 0.8f)
-                )
+            OptionButtonGroup(
+                label = "Font Style:",
+                options = listOf("Normal", "Italic"),
+                selectedOption = fontStyle,
+                onSelect = { fontStyle = it; updateComponent() }
             )
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
-                listOf("Normal", "Italic").forEach { option ->
-                    Button(
-                        onClick = {
-                            fontStyle = option
-                            onUpdate(
-                                component.copy(
-                                    text = text,
-                                    textColor = textColor,
-                                    backgroundColor = backgroundColor,
-                                    fontSize = fontSize.toFloatOrNull(),
-                                    fontWeight = fontWeight,
-                                    fontStyle = fontStyle,
-                                    textAlign = textAlign
-                                )
-                            )
-                        },
-                        enabled = fontStyle != option
-                    ) {
-                        Text(
-                            option,
-                            style = TextStyle(
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        )
-                    }
-                }
-            }
+        }
 
-
-            Text("Text Alignment:")
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("start", "center", "end").forEach { align ->
-                    Button(
-                        onClick = {
-                            textAlign = align
-                            onUpdate(
-                                component.copy(
-                                    text = text,
-                                    textColor = textColor,
-                                    backgroundColor = backgroundColor,
-                                    fontSize = fontSize.toFloatOrNull(),
-                                    fontWeight = fontWeight,
-                                    fontStyle = fontStyle,
-                                    textAlign = textAlign
-                                )
-                            )
-                        },
-
-                        enabled = textAlign != align
-                    ) {
-                        Text(
-                            align,
-                            style = TextStyle(
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        )
-                    }
-                }
-            }
+        PropsGroup(title = "Alignment") {
+            OptionButtonGroup(
+                label = "Font Alignment:",
+                options = listOf("start", "center", "end"),
+                selectedOption = textAlign,
+                onSelect = { textAlign = it; updateComponent() }
+            )
         }
     }
 }

@@ -21,6 +21,7 @@ kotlin {
         namespace = "com.example.common"
         compileSdk = 36
         minSdk = 24
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
     // Este es clave: agrega target JVM para Desktop

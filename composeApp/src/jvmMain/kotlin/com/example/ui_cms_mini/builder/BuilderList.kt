@@ -8,10 +8,10 @@ import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -37,7 +37,6 @@ import com.example.common.model.ComponentType
 import com.example.common.model.ImageComponent
 import com.example.common.model.LayoutNode
 import com.example.common.model.NodeType
-import com.example.common.model.Orientation
 import com.example.common.model.TextComponent
 import com.example.ui_cms_mini.ListViewModel
 import com.example.ui_cms_mini.components.imageBlock.ImageBlockDropComponent
@@ -49,6 +48,8 @@ fun BuilderList(viewModel: ListViewModel, modifier: Modifier = Modifier) {
     val rootNode by viewModel.rootNode.collectAsState()
     val selectedNode by viewModel.selectedNode.collectAsState()
 
+    val node = selectedNode?.first
+
     // TODO need to use LazyRow o ColumnRow
     println("Render BuilderList")
     Box(
@@ -56,8 +57,9 @@ fun BuilderList(viewModel: ListViewModel, modifier: Modifier = Modifier) {
     ) {
         LayoutContainer(
             rootNode = rootNode,
-            selectedNode = selectedNode,
-            viewModel = viewModel
+            selectedNode = node,
+            viewModel = viewModel,
+            isMainContainer = true
         )
     }
 }
@@ -68,7 +70,8 @@ fun BuilderList(viewModel: ListViewModel, modifier: Modifier = Modifier) {
 fun LayoutContainer(
     rootNode: LayoutNode.Container,
     selectedNode: LayoutNode?,
-    viewModel: ListViewModel
+    viewModel: ListViewModel,
+    isMainContainer: Boolean,
 ) {
     println("Render LayoutContainer ${rootNode.id}")
     var showTargetBackground by remember { mutableStateOf(false) }
@@ -124,15 +127,6 @@ fun LayoutContainer(
         .padding(horizontal = 16.dp)
         .padding(top = 16.dp)
         .fillMaxSize()
-        /*
-        .background(
-            if (showTargetBackground) Color.LightGray else Color.White,
-            RoundedCornerShape(8.dp)
-        )
-        .border(
-            BorderStroke(1.dp, Color.Gray.copy(alpha = 0.2F)),
-            shape = RoundedCornerShape(8.dp)
-        )*/
         .border(
             BorderStroke(
                 if (isSelected) 2.dp else 1.dp,
@@ -179,7 +173,7 @@ fun LayoutContainer(
             interactionSource = remember { MutableInteractionSource() },
         ) {
             if (!isSelected) {
-                viewModel.selectItem(rootNode)
+                viewModel.selectItem(rootNode, isMainContainer)
             } else {
                 viewModel.clearSelection()
             }
@@ -187,27 +181,14 @@ fun LayoutContainer(
 
     //val isRoot = rootNode.id == viewModel.rootNode.value.id
 
-
-    if (rootNode.orientation == Orientation.Row) {
-        Row(modifier = modifier) {
-            ContainerHeader(
-                onRemoveClick = {}
-            )
-            rootNode.children.forEach { node ->
-                RenderNode(rootNode, node, selectedNode, viewModel)
-            }
-            ContainerDropZone()
+    Column(modifier = modifier) {
+        ContainerHeader(
+            onRemoveClick = {}
+        )
+        rootNode.children.forEach { node ->
+            RenderNode(rootNode, node, selectedNode, viewModel)
         }
-    } else {
-        Column(modifier = modifier) {
-            ContainerHeader(
-                onRemoveClick = {}
-            )
-            rootNode.children.forEach { node ->
-                RenderNode(rootNode, node, selectedNode, viewModel)
-            }
-            ContainerDropZone()
-        }
+        ContainerDropZone()
     }
 }
 
@@ -242,7 +223,7 @@ fun RenderNode(
                         interactionSource = remember { MutableInteractionSource() },
                     ) {
                         if (!isSelected) {
-                            viewModel.selectItem(node)
+                            viewModel.selectItem(node, false)
                         } else {
                             viewModel.clearSelection()
                         }
@@ -276,7 +257,8 @@ fun RenderNode(
         is LayoutNode.Container -> LayoutContainer(
             rootNode = node,
             selectedNode = selectedNode,
-            viewModel = viewModel
+            viewModel = viewModel,
+            isMainContainer = false,
         )
     }
 }

@@ -1,10 +1,7 @@
 package com.example.ui_cms_mini.properties.common
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,28 +19,31 @@ fun PropsGroup(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
-        HorizontalDivider()
+        HorizontalDivider(color = Color.LightGray)
 
         Column(
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .background(Color.LightGray.copy(alpha = 0.1f))
+                .padding(16.dp)
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodySmall.copy(
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black.copy(alpha = 0.8f)
                 ),
-                modifier = Modifier.padding(bottom = 8.dp)
             )
+        }
+
+        HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3F))
+
+        Column(
+            modifier.fillMaxWidth().padding(vertical = 12.dp),
+        ) {
             content()
         }
     }

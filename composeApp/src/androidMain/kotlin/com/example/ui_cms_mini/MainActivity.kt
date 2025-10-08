@@ -83,7 +83,7 @@ fun ContentComposable() {
 
     val scope = rememberCoroutineScope()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
         Column(
             modifier = Modifier.fillMaxSize()
                 .verticalScroll(rememberScrollState()),

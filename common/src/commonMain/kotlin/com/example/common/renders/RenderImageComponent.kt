@@ -2,7 +2,6 @@ package com.example.common.renders
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -63,17 +62,20 @@ fun RenderImageComponent(component: ImageComponent, initialModifier: Modifier = 
             error = placeholderPainter,
         )
 
-        if (component.titleColorValue != null)
+     //   if (component.titleColorValue != null)
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(titleColor.copy(alpha = 0.4f))
-            )
-        Text(
-            text = component.title,
-            color = titleColor,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.align(Alignment.Center)
-        )
+                    .matchParentSize()
+                    .background(titleColor.copy(alpha = 0.3f))
+            ) {
+
+                Text(
+                    text = component.title,
+                    color = titleColor,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
     }
 }

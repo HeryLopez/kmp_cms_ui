@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun PropsTitle(title: String, id: String) {
     Column(
-        modifier = Modifier.padding( 16.dp),
+        modifier = Modifier.padding(16.dp)
     ) {
         Text(
             title,

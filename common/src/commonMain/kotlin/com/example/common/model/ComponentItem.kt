@@ -1,6 +1,6 @@
 package com.example.common.model
 
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -43,9 +43,39 @@ sealed class LayoutNode {
     @SerialName("container")
     data class Container(
         val id: String = generateId(),
+
+        // Content orientation
         val orientation: Orientation = Orientation.Column,
+
+        // Size (null = use available space)
+        val width: Float? = null,      // en dp
+        val height: Float? = null,     // en dp
+
+        // Padding
         val padding: Float = 0f,
+        val contentPadding: Float = 0f,
+
+        // Background and border
         val backgroundColor: String? = null,
+        val borderColor: String? = null,
+        val borderWidth: Float = 0f,
+
+        // Round Corner
+        val topStartRadius: Float = 0f,
+        val topEndRadius: Float = 0f,
+        val bottomStartRadius: Float = 0f,
+        val bottomEndRadius: Float = 0f,
+
+        // Shadows
+        val elevation: Float = 0f,
+
+        // Items Spacing
+        val spacing: Float = 0f,
+
+        // FlowRow
+        val flowMinCellSize: Float? = null,
+        val flowColumns: Int? = null,
+
         val children: List<LayoutNode> = listOf()
     ) : LayoutNode()
 
@@ -67,7 +97,7 @@ sealed class LayoutNode {
     }
 }
 
-enum class Orientation { Row, Column }
+enum class Orientation { Row, Column, Grid }
 
 
 @Serializable
@@ -124,6 +154,14 @@ data class TextComponent(
             "center" -> TextAlign.Center
             "end" -> TextAlign.End
             else -> TextAlign.Start
+        }
+
+    val containerAlignment: Alignment
+        get() = when (textAlign?.lowercase()) {
+            "start" -> Alignment.CenterStart
+            "center" -> Alignment.Center
+            "end" -> Alignment.CenterEnd
+            else -> Alignment.CenterStart
         }
 }
 

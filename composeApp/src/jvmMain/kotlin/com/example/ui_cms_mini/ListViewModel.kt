@@ -28,7 +28,7 @@ class ListViewModel : ViewModel() {
     private val _rootNode = MutableStateFlow(LayoutNode.Container())
     val rootNode: StateFlow<LayoutNode.Container> = _rootNode
 
-    private val _selectedNode = MutableStateFlow<LayoutNode?>(null)
+    private val _selectedNode = MutableStateFlow<Pair<LayoutNode, Boolean>?>(null)
     val selectedNode = _selectedNode
 
     private val _jsonExport = MutableStateFlow("")
@@ -43,8 +43,8 @@ class ListViewModel : ViewModel() {
     }
 
 
-    fun selectItem(node: LayoutNode) {
-        _selectedNode.value = node
+    fun selectItem(node: LayoutNode, isMainContainer: Boolean) {
+        _selectedNode.value = Pair(node, isMainContainer)
     }
 
     fun clearSelection() {
@@ -145,7 +145,7 @@ class ListViewModel : ViewModel() {
     /**
      * Elimina un nodo por su ID del contenedor.
      */
-    fun removeNodeById(root: LayoutNode.Container, nodeIdToRemove: String): LayoutNode.Container {
+    private fun removeNodeById(root: LayoutNode.Container, nodeIdToRemove: String): LayoutNode.Container {
         // 1. Intentamos filtrar al nodo de los hijos directos
         val newChildren = root.children.filter { it.nodeId != nodeIdToRemove }
 
@@ -183,7 +183,7 @@ class ListViewModel : ViewModel() {
      * @param transform La lambda que define cómo crear la nueva copia del nodo encontrado.
      * @return El nuevo nodo (o la nueva sub-jerarquía) si hubo un cambio, o el nodo original si no.
      */
-    fun updateNodeRecursive(
+    private fun updateNodeRecursive(
         node: LayoutNode,
         nodeIdToUpdate: String,
         transform: (LayoutNode.Component) -> LayoutNode.Component
@@ -253,7 +253,7 @@ class ListViewModel : ViewModel() {
                                 from = 0,
                                 1084
                             )
-                        }/300/200"
+                        }/600/400"
                     )
                 )
             }
@@ -296,7 +296,7 @@ class ListViewModel : ViewModel() {
     /**
      * Actualiza un Container de manera recursiva por su ID.
      */
-    fun updateContainerRecursive(
+    private fun updateContainerRecursive(
         node: LayoutNode,
         containerIdToUpdate: String,
         transform: (LayoutNode.Container) -> LayoutNode.Container

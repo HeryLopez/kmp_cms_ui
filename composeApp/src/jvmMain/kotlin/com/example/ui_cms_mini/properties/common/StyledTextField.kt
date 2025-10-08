@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -31,7 +32,8 @@ fun StyledTextField(
     val interactionSource = remember { MutableInteractionSource() }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
             text = label,
@@ -49,9 +51,7 @@ fun StyledTextField(
             ),
             onValueChange = onValueChange,
             singleLine = singleLine,
-            modifier = Modifier
-                .fillMaxWidth(),
-            //.background(color = Color.White),
+            modifier = Modifier.fillMaxWidth(),
             decorationBox = @Composable { innerTextField ->
                 OutlinedTextFieldDefaults.DecorationBox(
                     value = value,

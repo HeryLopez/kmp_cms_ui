@@ -2,33 +2,20 @@ package com.example.ui_cms_mini.components.containerBlock
 
 import androidx.compose.runtime.Composable
 import com.example.common.model.LayoutNode
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.common.model.Orientation
-import com.example.common.utils.toHex
+import com.example.ui_cms_mini.properties.common.ColorPickerProp
+import com.example.ui_cms_mini.properties.common.OptionButtonGroup
+import com.example.ui_cms_mini.properties.common.NumberStepperProp
+import com.example.ui_cms_mini.properties.common.PropsGroup
+import com.example.ui_cms_mini.properties.common.PropsTitle
+import com.example.ui_cms_mini.properties.common.StyledTextField
 
 @Composable
 fun ContainerBlockPropsEditor(
@@ -36,93 +23,172 @@ fun ContainerBlockPropsEditor(
     onUpdate: (LayoutNode.Container) -> Unit
 ) {
     var orientation by remember(container.id) { mutableStateOf(container.orientation) }
-    var backgroundColor by remember(container.id) { mutableStateOf(container.backgroundColor) }
+
+    var width by remember(container.id) { mutableStateOf(container.width?.toString() ?: "") }
+    var height by remember(container.id) { mutableStateOf(container.height?.toString() ?: "") }
+
     var paddingValue by remember(container.id) { mutableStateOf(container.padding) }
+    var contentPaddingValue by remember(container.id) { mutableStateOf(container.contentPadding) }
+
+    var backgroundColor by remember(container.id) { mutableStateOf(container.backgroundColor) }
+    var borderColor by remember(container.id) { mutableStateOf(container.borderColor) }
+    var borderWidth by remember(container.id) { mutableStateOf(container.borderWidth) }
+
+    var topStartRadius by remember(container.id) { mutableStateOf(container.topStartRadius) }
+    var topEndRadius by remember(container.id) { mutableStateOf(container.topEndRadius) }
+    var bottomStartRadius by remember(container.id) { mutableStateOf(container.bottomStartRadius) }
+    var bottomEndRadius by remember(container.id) { mutableStateOf(container.bottomEndRadius) }
+
+    var elevation by remember(container.id) { mutableStateOf(container.elevation) }
+    var spacing by remember(container.id) { mutableStateOf(container.spacing) }
+
+    var flowMinCellSize by remember(container.id) {
+        mutableStateOf(
+            container.flowMinCellSize?.toString() ?: ""
+        )
+    }
+    var flowColumns by remember(container.id) {
+        mutableStateOf(
+            container.flowColumns?.toString() ?: ""
+        )
+    }
 
 
-    Column {
-        Text("Editing Container", style = MaterialTheme.typography.titleMedium)
-        Text("ID: ${container.id}", style = MaterialTheme.typography.titleSmall.copy(color = Color.Gray, fontSize = 10.sp))
+    fun updateContainer() {
+        onUpdate(
+            container.copy(
+                orientation = orientation,
+                width = width.toFloatOrNull(),
+                height = height.toFloatOrNull(),
+                padding = paddingValue,
+                contentPadding = contentPaddingValue,
+                backgroundColor = backgroundColor,
+                borderColor = borderColor,
+                borderWidth = borderWidth,
+                topStartRadius = topStartRadius,
+                topEndRadius = topEndRadius,
+                bottomStartRadius = bottomStartRadius,
+                bottomEndRadius = bottomEndRadius,
+                elevation = elevation,
+                spacing = spacing,
+                flowMinCellSize = flowMinCellSize.toFloatOrNull(),
+                flowColumns = flowColumns.toIntOrNull(),
+            )
+        )
+    }
 
-        Spacer(modifier = Modifier.height(12.dp))
+    Column(
+        Modifier
+            .fillMaxWidth(),
+    ) {
+        PropsTitle(title = "Editing Container", id = "ID: ${container.id}")
 
-        // Selector de orientación
-        Text("Orientation")
-        Row {
-            listOf(Orientation.Row, Orientation.Column).forEach { option ->
-                Button(
-                    onClick = {
-                        orientation = option
-                        onUpdate(container.copy(
-                            orientation = orientation,
-                            backgroundColor = backgroundColor,
-                            padding = paddingValue
-                        ))
-                    },
-                    modifier = Modifier.padding(end = 8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (orientation == option) Color.Gray else Color.LightGray
-                    )
-                ) {
-                    Text(option.name)
-                }
+        PropsGroup(title = "Layout") {
+            OptionButtonGroup(
+                label = "Orientation:",
+                options = listOf(
+                    Orientation.Row,
+                    Orientation.Column,
+                    Orientation.Grid,
+                ),
+                selectedOption = orientation,
+                onSelect = { orientation = it; updateContainer() }
+            )
+
+
+            // Width & Height
+            StyledTextField("Width (leave empty for max width)", width) {
+                width = it; updateContainer()
             }
+            StyledTextField("Height (leave empty for max height)", height) {
+                height = it; updateContainer()
+            }
+
+            NumberStepperProp(
+                label = "Padding",
+                value = paddingValue,
+                onValueChange = {
+                    paddingValue = it; updateContainer()
+                }
+            )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        PropsGroup(title = "Appearance") {
+            ColorPickerProp(
+                "Background Color",
+                backgroundColor
+            ) { backgroundColor = it; updateContainer() }
 
-        // Selector de color de fondo
-        Text("Background Color")
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            val colors = listOf(Color.White, Color.LightGray, Color.Red, Color.Green, Color.Blue)
-            colors.forEach { colorOption ->
-                val colorHex = colorOption.toHex()
-                Box(
-                    modifier = Modifier
-                        .size(26.dp)
-                        .background(colorOption, shape = RoundedCornerShape(4.dp))
-                        .border(
-                            width = if (backgroundColor == colorHex) 2.dp else 1.dp,
-                            color = if (backgroundColor == colorHex) Color.Black else Color.Gray,
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .clickable {
-                            backgroundColor = colorHex
-                            onUpdate(container.copy(
-                                orientation = orientation,
-                                backgroundColor = backgroundColor,
-                                padding = paddingValue
-                            ))
+            ColorPickerProp(
+                "Border Color",
+                borderColor
+            ) { borderColor = it; updateContainer() }
+
+            NumberStepperProp(
+                label = "Border Width",
+                value = borderWidth,
+                step = 1f,
+                onValueChange = {
+                    borderWidth = it; updateContainer()
+                }
+            )
+
+            NumberStepperProp(
+                label = "Elevation",
+                value = elevation,
+                onValueChange = {
+                    elevation = it; updateContainer()
+                }
+            )
+
+            NumberStepperProp(
+                label = "Spacing",
+                value = spacing,
+                onValueChange = {
+                    spacing = it; updateContainer()
+                }
+            )
+        }
+
+        PropsGroup(title = "Corner Radii") {
+            listOf(
+                "Top Start" to topStartRadius,
+                "Top End" to topEndRadius,
+                "Bottom Start" to bottomStartRadius,
+                "Bottom End" to bottomEndRadius
+            ).forEach { (label, value) ->
+                NumberStepperProp(
+                    label = label,
+                    value = value,
+                    onValueChange = {
+                        val newVal = it
+                        when (label) {
+                            "Top Start" -> topStartRadius = newVal
+                            "Top End" -> topEndRadius = newVal
+                            "Bottom Start" -> bottomStartRadius = newVal
+                            "Bottom End" -> bottomEndRadius = newVal
                         }
-                        .padding(4.dp)
+                        updateContainer()
+                    }
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        PropsGroup(title = "Row") {
+            NumberStepperProp(
+                label = "Content Padding",
+                value = contentPaddingValue,
+                onValueChange = {
+                    contentPaddingValue = it; updateContainer()
+                }
+            )
+        }
 
-        // Padding
-        Text("Padding: ${paddingValue.toInt()} dp")
-        Row {
-            Button(onClick = {
-                paddingValue = (paddingValue + 4f).coerceAtMost(64f)
-                onUpdate(container.copy(
-                    orientation = orientation,
-                    backgroundColor = backgroundColor,
-                    padding = paddingValue
-                ))
-            }) { Text("+") }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(onClick = {
-                paddingValue = (paddingValue - 4f).coerceAtLeast(0f)
-                onUpdate(container.copy(
-                    orientation = orientation,
-                    backgroundColor = backgroundColor,
-                    padding = paddingValue
-                ))
-            }) { Text("-") }
+        PropsGroup(title = "Grid") {
+            StyledTextField("Min Cell Size (dp)", flowMinCellSize) {
+                flowMinCellSize = it; updateContainer()
+            }
+            StyledTextField("Columns", flowColumns) { flowColumns = it; updateContainer() }
         }
     }
 }
