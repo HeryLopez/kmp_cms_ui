@@ -78,15 +78,12 @@ class ListViewModel : ViewModel() {
         syncInServer()
     }
 
-    fun removeComponentFromContainer(containerId: String, component: LayoutNode.Component) {
-        // Usamos la función de eliminación recursiva
-        val newRoot = removeNodeById(_rootNode.value, component.id)
-        // Reemplazamos la raíz
+    fun removeNode(containerId: String) {
+        val newRoot = removeNodeById(_rootNode.value, containerId)
         _rootNode.value = newRoot
         buildJson()
         syncInServer()
     }
-
 
     private fun findContainerById(
         root: LayoutNode.Container,

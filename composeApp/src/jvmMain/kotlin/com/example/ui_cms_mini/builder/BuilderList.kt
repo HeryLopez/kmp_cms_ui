@@ -183,7 +183,11 @@ fun LayoutContainer(
 
     Column(modifier = modifier) {
         ContainerHeader(
-            onRemoveClick = {}
+            onRemoveClick = {
+                viewModel.removeNode(
+                    rootNode.id
+                )
+            }
         )
         rootNode.children.forEach { node ->
             RenderNode(rootNode, node, selectedNode, viewModel)
@@ -232,9 +236,8 @@ fun RenderNode(
                 ComponentHeader(
                     text = "${ComponentType.fromType(node.component.type)?.title}",
                     onRemoveClick = {
-                        viewModel.removeComponentFromContainer(
-                            parentNode.id,
-                            node
+                        viewModel.removeNode(
+                            node.id
                         )
                     }
                 )

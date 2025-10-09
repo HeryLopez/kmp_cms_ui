@@ -117,10 +117,12 @@ data class TextComponent(
     val text: String,
     val textColor: String? = null,
     val backgroundColor: String? = null,
-    val fontSize: Float? = null,
-    val fontWeight: String? = null,
-    val fontStyle: String? = null,
-    val textAlign: String? = null
+    val fontSize: Float = 14f,
+    val fontWeight: String = "Normal",
+    val fontStyle: String = "Normal",
+    val textAlign: String = "Start",
+    // Padding
+    val padding: Float = 0f,
 ) : ComponentItem {
     val textColorValue: Color?
         get() = ColorUtils.hexToColor(textColor)
@@ -130,7 +132,7 @@ data class TextComponent(
 
 
     val fontWeightValue: FontWeight
-        get() = when (fontWeight?.lowercase()) {
+        get() = when (fontWeight.lowercase()) {
             "bold" -> FontWeight.Bold
             "medium" -> FontWeight.Medium
             "light" -> FontWeight.Light
@@ -140,16 +142,16 @@ data class TextComponent(
         }
 
     val fontStyleValue: FontStyle
-        get() = when (fontStyle?.lowercase()) {
+        get() = when (fontStyle.lowercase()) {
             "italic" -> FontStyle.Italic
             else -> FontStyle.Normal
         }
 
     val fontSizeValue: TextUnit
-        get() = fontSize?.sp ?: 14.sp
+        get() = fontSize.sp
 
     val textAlignValue: TextAlign
-        get() = when (textAlign?.lowercase()) {
+        get() = when (textAlign.lowercase()) {
             "start" -> TextAlign.Start
             "center" -> TextAlign.Center
             "end" -> TextAlign.End
@@ -157,7 +159,7 @@ data class TextComponent(
         }
 
     val containerAlignment: Alignment
-        get() = when (textAlign?.lowercase()) {
+        get() = when (textAlign.lowercase()) {
             "start" -> Alignment.CenterStart
             "center" -> Alignment.Center
             "end" -> Alignment.CenterEnd

@@ -10,8 +10,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.common.model.ComponentType
 import com.example.common.model.TextComponent
-import com.example.common.utils.ColorUtils
 import com.example.ui_cms_mini.properties.common.ColorPickerProp
+import com.example.ui_cms_mini.properties.common.NumberStepperProp
 import com.example.ui_cms_mini.properties.common.OptionButtonGroup
 import com.example.ui_cms_mini.properties.common.PropsGroup
 import com.example.ui_cms_mini.properties.common.PropsTitle
@@ -26,14 +26,12 @@ fun TextBlockPropsEditor(
     var textColor by remember(component.id) { mutableStateOf(component.textColor) }
     var backgroundColor by remember(component.id) { mutableStateOf(component.backgroundColor) }
 
-    var fontSize by remember(component.id) {
-        mutableStateOf(
-            component.fontSize?.toString() ?: "14"
-        )
-    }
-    var fontWeight by remember(component.id) { mutableStateOf(component.fontWeight ?: "normal") }
-    var fontStyle by remember(component.id) { mutableStateOf(component.fontStyle ?: "normal") }
-    var textAlign by remember(component.id) { mutableStateOf(component.textAlign ?: "start") }
+    var fontSize by remember(component.id) { mutableStateOf(component.fontSize) }
+    var fontWeight by remember(component.id) { mutableStateOf(component.fontWeight) }
+    var fontStyle by remember(component.id) { mutableStateOf(component.fontStyle) }
+    var textAlign by remember(component.id) { mutableStateOf(component.textAlign) }
+
+    var paddingValue by remember(component.id) { mutableStateOf(component.padding) }
 
     fun updateComponent() {
         onUpdate(
@@ -41,7 +39,8 @@ fun TextBlockPropsEditor(
                 text = text,
                 textColor = textColor,
                 backgroundColor = backgroundColor,
-                fontSize = fontSize.toFloatOrNull(),
+                padding = paddingValue,
+                fontSize = fontSize,
                 fontWeight = fontWeight,
                 fontStyle = fontStyle,
                 textAlign = textAlign
@@ -65,10 +64,13 @@ fun TextBlockPropsEditor(
                 onValueChange = { text = it; updateComponent() }
             )
 
-            ColorPickerProp(
-                "Background Color",
-                backgroundColor
-            ) { backgroundColor = it; updateComponent() }
+            NumberStepperProp(
+                label = "Padding",
+                value = paddingValue,
+                onValueChange = {
+                    paddingValue = it; updateComponent()
+                }
+            )
         }
 
 
@@ -77,13 +79,23 @@ fun TextBlockPropsEditor(
                 "Text Color",
                 textColor
             ) { textColor = it; updateComponent() }
+
+            ColorPickerProp(
+                "Background Color",
+                backgroundColor
+            ) { backgroundColor = it; updateComponent() }
         }
 
         PropsGroup(title = "Typography") {
-            StyledTextField(
-                label = "Font Size (sp):",
+
+            NumberStepperProp(
+                label = "Font Size,",
                 value = fontSize,
-                onValueChange = { fontSize = it; updateComponent() }
+                step = 1f,
+                max = 128f,
+                onValueChange = {
+                    fontSize = it; updateComponent()
+                }
             )
 
             OptionButtonGroup(
@@ -104,7 +116,7 @@ fun TextBlockPropsEditor(
         PropsGroup(title = "Alignment") {
             OptionButtonGroup(
                 label = "Font Alignment:",
-                options = listOf("start", "center", "end"),
+                options = listOf("Start", "Center", "End"),
                 selectedOption = textAlign,
                 onSelect = { textAlign = it; updateComponent() }
             )
