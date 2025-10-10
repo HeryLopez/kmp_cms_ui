@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -179,16 +178,25 @@ fun LayoutContainer(
             }
         }
 
-    //val isRoot = rootNode.id == viewModel.rootNode.value.id
-
     Column(modifier = modifier) {
-        ContainerHeader(
-            onRemoveClick = {
-                viewModel.removeNode(
-                    rootNode.id
-                )
-            }
-        )
+        if (isMainContainer) {
+            ContainerMainHeader()
+        } else {
+            ContainerHeader(
+                onMoveUp = {
+                    viewModel.moveNode(rootNode.id, moveUp = true)
+                },
+                onMoveDown = {
+                    viewModel.moveNode(rootNode.id, moveUp = false)
+                },
+                onRemoveClick = {
+                    viewModel.removeNode(
+                        rootNode.id
+                    )
+                }
+            )
+        }
+
         rootNode.children.forEach { node ->
             RenderNode(rootNode, node, selectedNode, viewModel)
         }
@@ -235,6 +243,12 @@ fun RenderNode(
             ) {
                 ComponentHeader(
                     text = "${ComponentType.fromType(node.component.type)?.title}",
+                    onMoveUp = {
+                        viewModel.moveNode(node.id, moveUp = true)
+                    },
+                    onMoveDown = {
+                        viewModel.moveNode(node.id, moveUp = false)
+                    },
                     onRemoveClick = {
                         viewModel.removeNode(
                             node.id

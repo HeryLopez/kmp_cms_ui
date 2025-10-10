@@ -85,8 +85,7 @@ fun ContentComposable() {
 
     Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
         Column(
-            modifier = Modifier.fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             RenderScreen(jsonList)

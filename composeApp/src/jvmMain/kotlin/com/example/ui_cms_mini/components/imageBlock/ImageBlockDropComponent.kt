@@ -34,7 +34,7 @@ fun ImageBlockDropComponent(component: ImageComponent) {
         RenderImageComponent(
             component,
             initialModifier = Modifier
-                .heightIn(max = 100.dp)
+                .heightIn(max = 60.dp)
                 .aspectRatio(aspectRatio)
         )
     }

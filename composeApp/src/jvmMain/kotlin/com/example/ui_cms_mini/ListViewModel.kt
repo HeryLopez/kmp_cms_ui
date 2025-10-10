@@ -55,12 +55,9 @@ class ListViewModel : ViewModel() {
         return LayoutNode.Container(
             id = this.id,
             orientation = this.orientation,
-            // Mapeamos los hijos para crear nuevas copias inmutables
             children = this.children.map { child ->
                 when (child) {
-                    // Copia recursiva para Container
                     is LayoutNode.Container -> child.deepCopy()
-                    // Copia de datos (shallow copy) para Componente
                     is LayoutNode.Component -> child.copy()
                 }
             }
@@ -69,9 +66,7 @@ class ListViewModel : ViewModel() {
 
     fun addComponentToContainer(containerId: String, type: NodeType) {
         val newNode = createComponent(type)
-        // 1. Creamos la nueva jerarquía inmutable
         val newRoot = addNodeToContainer(_rootNode.value, containerId, newNode)
-        // 2. Reemplazamos la raíz, forzando la emisión del StateFlow
         _rootNode.value = newRoot
 
         buildJson()
@@ -99,39 +94,26 @@ class ListViewModel : ViewModel() {
         return null
     }
 
-    /**
-     * Inserta un nuevo nodo en el contenedor especificado.
-     *
-     * NOTA: Esta función DEBE RECONSTRUIR la ruta desde el nodo modificado
-     * hasta la raíz para mantener la inmutabilidad.
-     */
+
     fun addNodeToContainer(
         root: LayoutNode.Container,
         containerId: String,
         newNode: LayoutNode
     ): LayoutNode.Container {
         if (root.id == containerId) {
-            // Encontramos el contenedor. Creamos una nueva instancia
-            // con la nueva lista de hijos.
             return root.copy(children = root.children + newNode)
         }
 
-        // Recorremos los hijos recursivamente.
         val newChildren = root.children.map { child ->
             if (child is LayoutNode.Container) {
-                // Intentamos modificar el hijo Container
                 val updatedChild = addNodeToContainer(child, containerId, newNode)
                 if (updatedChild !== child) {
-                    // Si el hijo fue modificado, devolvemos el hijo modificado
                     return@map updatedChild
                 }
             }
-            // Devolvemos el hijo sin cambios
             return@map child
         }
 
-        // Si la lista de hijos ha cambiado (porque se modificó uno de sus descendientes),
-        // creamos una copia de la raíz con los nuevos hijos.
         return if (newChildren !== root.children) {
             root.copy(children = newChildren)
         } else {
@@ -139,30 +121,23 @@ class ListViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Elimina un nodo por su ID del contenedor.
-     */
     private fun removeNodeById(root: LayoutNode.Container, nodeIdToRemove: String): LayoutNode.Container {
-        // 1. Intentamos filtrar al nodo de los hijos directos
         val newChildren = root.children.filter { it.nodeId != nodeIdToRemove }
 
-        // 2. Si la cantidad de hijos ha cambiado, significa que el nodo fue eliminado aquí.
         if (newChildren.size < root.children.size) {
             return root.copy(children = newChildren)
         }
 
-        // 3. Si no se eliminó aquí, navegamos recursivamente.
         val childrenAfterRecursiveRemoval = root.children.map { child ->
             if (child is LayoutNode.Container) {
                 val updatedChild = removeNodeById(child, nodeIdToRemove)
                 if (updatedChild !== child) {
-                    return@map updatedChild // Devolvemos el contenedor hijo actualizado
+                    return@map updatedChild
                 }
             }
-            return@map child // Devolvemos el nodo sin cambios
+            return@map child
         }
 
-        // 4. Si la lista de hijos cambió a través de la recursión, copiamos la raíz.
         return if (childrenAfterRecursiveRemoval !== root.children) {
             root.copy(children = childrenAfterRecursiveRemoval)
         } else {
@@ -170,16 +145,6 @@ class ListViewModel : ViewModel() {
         }
     }
 
-
-    /**
-     * Función que busca un nodo por ID y aplica una transformación,
-     * devolviendo la nueva sub-jerarquía inmutable.
-     *
-     * @param node El nodo actual (puede ser Container o Component).
-     * @param nodeIdToUpdate El ID del nodo a buscar.
-     * @param transform La lambda que define cómo crear la nueva copia del nodo encontrado.
-     * @return El nuevo nodo (o la nueva sub-jerarquía) si hubo un cambio, o el nodo original si no.
-     */
     private fun updateNodeRecursive(
         node: LayoutNode,
         nodeIdToUpdate: String,
@@ -187,35 +152,27 @@ class ListViewModel : ViewModel() {
     ): LayoutNode {
         when (node) {
             is LayoutNode.Component -> {
-                // Caso Base: Encontramos el componente
                 return if (node.id == nodeIdToUpdate) {
-                    // Aplicamos la transformación y devolvemos la nueva copia del Component
                     transform(node)
                 } else {
-                    // Devolvemos el nodo original si no coincide
                     node
                 }
             }
 
             is LayoutNode.Container -> {
                 var changed = false
-                // 1. Mapeamos los hijos para crear la nueva lista
                 val newChildren = node.children.map { child ->
-                    // Llamada recursiva para procesar los hijos
                     val updatedChild = updateNodeRecursive(child, nodeIdToUpdate, transform)
 
-                    // Verificamos si la referencia del hijo ha cambiado
                     if (updatedChild !== child) {
                         changed = true
                     }
                     return@map updatedChild
                 }
 
-                // 2. Si algún hijo ha cambiado, creamos una nueva copia del Container
                 return if (changed) {
                     node.copy(children = newChildren)
                 } else {
-                    // Si no hay cambios en la sub-rama, devolvemos el Container original
                     node
                 }
             }
@@ -271,35 +228,25 @@ class ListViewModel : ViewModel() {
 
 
     fun updateComponent(nodeId: String, updated: ComponentItem) {
-        // La lambda de transformación crea el nuevo componente inmutable
         val newRoot = updateNodeRecursive(_rootNode.value, nodeId) { componentNode ->
-            // Aquí creamos la nueva instancia del Component con el nuevo 'component'
             componentNode.copy(component = updated)
         }
 
-        // 1. Comprobamos si la referencia de la raíz ha cambiado (indicando que hubo una actualización)
         if (newRoot !== _rootNode.value) {
-            // 2. Reemplazamos la raíz, forzando la emisión del StateFlow y la recomposición
             _rootNode.value = newRoot as LayoutNode.Container
-
-            // buildJson()
-            // syncInServer()
         }
         buildJson()
         syncInServer()
     }
 
 
-    /**
-     * Actualiza un Container de manera recursiva por su ID.
-     */
     private fun updateContainerRecursive(
         node: LayoutNode,
         containerIdToUpdate: String,
         transform: (LayoutNode.Container) -> LayoutNode.Container
     ): LayoutNode {
         return when (node) {
-            is LayoutNode.Component -> node // No hacemos nada con los componentes
+            is LayoutNode.Component -> node
             is LayoutNode.Container -> {
                 var changed = false
 
@@ -310,7 +257,6 @@ class ListViewModel : ViewModel() {
                     updatedChild
                 }
 
-                // Si este es el container que queremos actualizar
                 val updatedNode = if (node.id == containerIdToUpdate) {
                     transform(node.copy(children = newChildren))
                 } else if (changed) {
@@ -322,16 +268,12 @@ class ListViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Método público para actualizar un Container desde ViewModel
-     */
+
     fun updateContainer(containerId: String, updated: LayoutNode.Container) {
         val newRoot = updateContainerRecursive(_rootNode.value, containerId) {
-            // Aquí reemplazamos el container con la nueva versión
             updated
         }
 
-        // Si cambió, reemplazamos la raíz
         if (newRoot !== _rootNode.value) {
             _rootNode.value = newRoot as LayoutNode.Container
         }
@@ -340,6 +282,69 @@ class ListViewModel : ViewModel() {
         syncInServer()
     }
 
+
+    fun moveNode(nodeId: String, moveUp: Boolean) {
+        val newRoot = moveNodeRecursive(_rootNode.value, nodeId, moveUp)
+        if (newRoot !== _rootNode.value) {
+            _rootNode.value = newRoot
+            buildJson()
+            syncInServer()
+        }
+    }
+
+    private fun moveNodeRecursive(
+        node: LayoutNode.Container,
+        nodeId: String,
+        moveUp: Boolean
+    ): LayoutNode.Container {
+        var changed = false
+
+        val newChildren = node.children.toMutableList()
+
+        val index = newChildren.indexOfFirst { it.nodeId == nodeId }
+
+        if (index != -1) {
+            val targetIndex = if (moveUp) index - 1 else index + 1
+            if (targetIndex in newChildren.indices) {
+
+                val temp = newChildren[targetIndex]
+                newChildren[targetIndex] = newChildren[index]
+                newChildren[index] = temp
+                changed = true
+            }
+        } else {
+            val updatedChildren = newChildren.map { child ->
+                if (child is LayoutNode.Container) {
+                    val updatedChild = moveNodeRecursive(child, nodeId, moveUp)
+                    if (updatedChild !== child) changed = true
+                    updatedChild
+                } else child
+            }
+            if (changed) return node.copy(children = updatedChildren)
+        }
+
+        return if (changed) node.copy(children = newChildren) else node
+    }
+
+    fun manualInitData(jsonString: String) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                if (jsonString.isNotBlank()) {
+                    val container = ComponentJsonMapper.fromJson(jsonString)
+                    _rootNode.value = container
+                } else {
+                    _rootNode.value = LayoutNode.Container()
+                }
+                buildJson()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _rootNode.value = LayoutNode.Container()
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
 
     fun initData() {
         viewModelScope.launch {

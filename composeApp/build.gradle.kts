@@ -38,7 +38,7 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
-
+            implementation(libs.material.icons.extended)
         }
         jvmMain.dependencies {
             implementation(project(":common"))
@@ -93,8 +93,14 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.example.ui_cms_mini"
-            packageVersion = "1.0.0"
+            packageName = "Desktop Builder"
+            packageVersion = "1.0.1"
+
+            macOS {
+                packageName = "Desktop Builder"
+                bundleID = "com.example.ui_cms_mini"
+                iconFile.set(project.file("logo.icns"))
+            }
         }
     }
 }

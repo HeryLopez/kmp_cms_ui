@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.example.common.model.ComponentType
 import org.jetbrains.compose.resources.painterResource
 import ui_cms_mini.composeapp.generated.resources.Res
-import ui_cms_mini.composeapp.generated.resources.delete_icon
 import ui_cms_mini.composeapp.generated.resources.image_icon
 
 @Composable

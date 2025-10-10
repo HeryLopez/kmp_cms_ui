@@ -1,6 +1,5 @@
 package com.example.ui_cms_mini.builder
 
-import IconButtonDesktop
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,23 +8,36 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ui_cms_mini.composeapp.generated.resources.Res
-import ui_cms_mini.composeapp.generated.resources.delete_icon
+import com.example.ui_cms_mini.common.composables.CustomIconButton
 
 @Composable
 fun ComponentHeader(
     text: String,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
     onRemoveClick: () -> Unit
 ) {
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,12 +65,54 @@ fun ComponentHeader(
                     color = Color.Black.copy(alpha = 0.8F)
                 )
             )
-            IconButtonDesktop(
-                resource = Res.drawable.delete_icon,
-                iconColor = Color.Black.copy(alpha = 0.6F),
-                iconSize = 18.dp,
-                onClick = onRemoveClick
+
+            CustomIconButton(
+                resource = Icons.Outlined.ArrowUpward,
+                contentDescription = "Move up",
+                onClick = onMoveUp,
+            )
+
+            CustomIconButton(
+                resource = Icons.Outlined.ArrowDownward,
+                onClick = onMoveDown,
+                contentDescription = "Move down",
+            )
+
+            CustomIconButton(
+                resource = Icons.Outlined.Delete,
+                onClick = { showConfirmDialog = true },
+                contentDescription = "Delete",
             )
         }
+    }
+
+    if (showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showConfirmDialog = false },
+            title = {
+                Text(
+                    text = "Delete Component",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            },
+            text = {
+                Text("Are you sure you want to delete this component?")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showConfirmDialog = false
+                        onRemoveClick()
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showConfirmDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }

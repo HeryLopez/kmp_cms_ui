@@ -1,6 +1,6 @@
 package com.example.ui_cms_mini.builder
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,11 +20,16 @@ import androidx.compose.ui.unit.sp
 fun ContainerDropZone() {
     Box(
         modifier = Modifier
-            .height(70.dp)
+            .height(90.dp)
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .padding(top = 16.dp, bottom = 16.dp)
-            .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
+            //.background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+            .border(
+                width = 1.dp,
+                color = Color.LightGray.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(8.dp)
+            ),
         contentAlignment = Alignment.Center
     ) {
         Text(
