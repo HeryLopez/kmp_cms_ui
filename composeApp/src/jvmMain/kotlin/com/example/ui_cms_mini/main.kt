@@ -1,6 +1,5 @@
 package com.example.ui_cms_mini
 
-import IconButtonDesktop
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -21,6 +20,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Ballot
+import androidx.compose.material.icons.outlined.Preview
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,10 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.example.ui_cms_mini.builder.BuilderList
+import com.example.ui_cms_mini.common.composables.HorizontalIconButton
 import com.example.ui_cms_mini.common.composables.HorizontalResizeHandle
 import com.example.ui_cms_mini.common.composables.PanelHeader
 import com.example.ui_cms_mini.common.composables.VerticalResizeHandle
@@ -45,23 +49,66 @@ import com.example.ui_cms_mini.components.textBlock.TextBlockDragSource
 import com.example.ui_cms_mini.console.ConsolePanel
 import com.example.ui_cms_mini.preview.PreviewMobile
 import com.example.ui_cms_mini.properties.PropertiesPanel
+import org.jetbrains.compose.resources.painterResource
 import ui_cms_mini.composeapp.generated.resources.Res
-import ui_cms_mini.composeapp.generated.resources.preview_icon
-import ui_cms_mini.composeapp.generated.resources.props_icon
+import ui_cms_mini.composeapp.generated.resources.logo
+import javax.swing.JOptionPane
 
-fun main() = application {
+fun main() {
+    System.setProperty("apple.awt.application.name", "Desktop Builder")
+
+    if (java.awt.Desktop.isDesktopSupported()) {
+        val desktop = java.awt.Desktop.getDesktop()
+        if (desktop.isSupported(java.awt.Desktop.Action.APP_ABOUT)) {
+            desktop.setAboutHandler {
+                aboutDialog()
+            }
+        }
+    }
+
+    desktopApp()
+}
+
+fun aboutDialog() {
+    JOptionPane.showMessageDialog(
+        null,
+        "Desktop builder v1.0.1",
+        "About of",
+        JOptionPane.INFORMATION_MESSAGE,
+    )
+}
+
+
+
+fun desktopApp() = application {
     val viewModel = ListViewModel()
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Builder",
-        state = rememberWindowState(
-            width = 1480.dp,
-            height = 1100.dp
-        )
+        title = "Desktop Builder",
+        icon = painterResource(Res.drawable.logo),
+        state = rememberWindowState(width = 1480.dp, height = 1100.dp)
     ) {
+        MenuBar {
+            Menu("File") {
+                Item(
+                    "Import",
+                    onClick = {
+
+                    }
+                )
+                Item(
+                    "Export",
+                    onClick = {
+
+                    }
+                )
+            }
+        }
+
         MainContent(viewModel)
     }
 }
+
 
 @Composable
 fun MainContent(viewModel: ListViewModel) {
@@ -75,7 +122,6 @@ fun MainContent(viewModel: ListViewModel) {
     val componentsMax = 310.dp
     val centerMin = 200.dp
     val centerMax = 500.dp
-
 
     val previewMin = 0.dp
     val previewMax = 450.dp
@@ -142,7 +188,10 @@ fun MainContent(viewModel: ListViewModel) {
                     color = componentsColor,
                     onDrag = { delta ->
                         val newWidth =
-                            (componentsPanelWidth + delta).coerceIn(componentsMin, componentsMax)
+                            (componentsPanelWidth + delta).coerceIn(
+                                componentsMin,
+                                componentsMax
+                            )
                         componentsPanelWidth = newWidth
                     }
                 )
@@ -169,7 +218,10 @@ fun MainContent(viewModel: ListViewModel) {
                             ) {
                                 BuilderList(
                                     viewModel = viewModel,
-                                    modifier = Modifier.widthIn(min = centerMin, max = centerMax)
+                                    modifier = Modifier.widthIn(
+                                        min = centerMin,
+                                        max = centerMax
+                                    )
                                 )
                             }
 
@@ -190,14 +242,15 @@ fun MainContent(viewModel: ListViewModel) {
                 VerticalResizeHandle(
                     color = propsColor,
                     onDrag = { delta ->
-                        val newWidth = (propsPanelWidth - delta).coerceIn(Constants.PROPS_MIN, Constants.PROPS_MAX)
+                        val newWidth = (propsPanelWidth - delta).coerceIn(
+                            Constants.PROPS_MIN,
+                            Constants.PROPS_MAX
+                        )
                         propsPanelWidth = newWidth
                     }
                 )
 
-                Box(
-
-                ) {
+                Box {
                     Column(
                         modifier = Modifier
                             .width(propsPanelWidth)
@@ -215,7 +268,8 @@ fun MainContent(viewModel: ListViewModel) {
                 VerticalResizeHandle(
                     color = previewColor,
                     onDrag = { delta ->
-                        val newWidth = (previewPanelWidth - delta).coerceIn(previewMin, previewMax)
+                        val newWidth =
+                            (previewPanelWidth - delta).coerceIn(previewMin, previewMax)
                         previewPanelWidth = newWidth
                     }
                 )
@@ -252,23 +306,25 @@ fun MainContent(viewModel: ListViewModel) {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        IconButtonDesktop(
-                            resource = Res.drawable.preview_icon,
+                        HorizontalIconButton(
+                            resource = Icons.Outlined.Preview,
                             text = "Preview",
                             rippleRounded = 6.dp,
                             expand = true,
                             onClick = {
-                                previewPanelWidth = if (previewPanelWidth > 0.dp) 0.dp else previewMax
+                                previewPanelWidth =
+                                    if (previewPanelWidth > 0.dp) 0.dp else previewMax
                             }
 
                         )
-                        IconButtonDesktop(
-                            resource = Res.drawable.props_icon,
+                        HorizontalIconButton(
+                            resource = Icons.Outlined.Ballot,
                             text = "Properties",
                             rippleRounded = 6.dp,
                             expand = true,
                             onClick = {
-                                propsPanelWidth = if (propsPanelWidth > 0.dp) 0.dp else Constants.PROPS_MAX
+                                propsPanelWidth =
+                                    if (propsPanelWidth > 0.dp) 0.dp else Constants.PROPS_MAX
                             }
                         )
                     }

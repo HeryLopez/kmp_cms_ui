@@ -27,7 +27,7 @@ fun RenderButtonComponent(component: ButtonComponent) {
             onClick = { },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF1976D2), // Azul por defecto
+                containerColor = Color(0xFF1976D2),
                 contentColor = Color.White
             ),
             shape = RoundedCornerShape(8.dp)
